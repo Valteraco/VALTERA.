@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resources | Valtera</title>
+    
+    <link rel="icon" type="image/png" href="V.FavIcon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="v2.css">
+</head>
+<body>
+
+    <nav class="valtera-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">VALTERA.</a>
+            <div class="nav-links">
+                <a href="partner.html">Partner With Us</a>
+                <a href="consumer-protection.html">Consumer Protection</a>
+                <a href="resources.html">Resources</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="aba-search-section">
+        <div class="container">
+            <header class="text-center search-header">
+                <h1 class="page-title text-dark">Additional Resources</h1>
+                <h2 class="search-subtitle">Search Affiliated Business Arrangements (ABAs)</h2>
+            </header>
+
+            <div class="search-bar-wrapper">
+                <input type="text" id="abaSearchInput" class="aba-search-input" placeholder="Search by Real Estate Brokerage or Mortgage Lender...">
+                <span class="search-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                </span>
+            </div>
+
+            <div class="aba-results-container" id="abaResults">
+                <div class="aba-card">
+                    <div class="aba-card-header">
+                        <h3>Horizon Realty Group <span>(Real Estate Services)</span> - BlueStone Mortgage <span>(Mortgage Services)</span></h3>
+                        <span class="nmls-badge">NMLS #123456</span>
+                    </div>
+                    <div class="aba-officers">
+                        <h4>Loan Officers</h4>
+                        <ul>
+                            <li>Patricia Thomas | (555) 456-7890 | patricia.thomas@bluestone.com | NMLS #111222</li>
+                            <li>James Caldwell | (555) 456-7891 | james.caldwell@bluestone.com | NMLS #333444</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="aba-card">
+                    <div class="aba-card-header">
+                        <h3>Vanguard Property Associates <span>(Real Estate Services)</span> - First Choice Lending <span>(Mortgage Services)</span></h3>
+                        <span class="nmls-badge">NMLS #654321</span>
+                    </div>
+                    <div class="aba-officers">
+                        <h4>Loan Officers</h4>
+                        <ul>
+                            <li>Sarah Jenkins | (555) 234-5678 | s.jenkins@firstchoice.com | NMLS #555666</li>
+                            <li>Marcus Webb | (555) 234-5679 | m.webb@firstchoice.com | NMLS #777888</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="aba-card">
+                    <div class="aba-card-header">
+                        <h3>Sterling Real Estate <span>(Real Estate Services)</span> - Beacon Home Funding <span>(Mortgage Services)</span></h3>
+                        <span class="nmls-badge">NMLS #987654</span>
+                    </div>
+                    <div class="aba-officers">
+                        <h4>Loan Officers</h4>
+                        <ul>
+                            <li>Elena Rodriguez | (555) 876-5432 | elena.r@beaconfunding.com | NMLS #999000</li>
+                            <li>David Chen | (555) 876-5433 | david.c@beaconfunding.com | NMLS #123123</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div id="abaEhoContainer" style="display: none; justify-content: flex-end; max-width: 900px; margin: 1rem auto 0;">
+                <img src="EqualHousingO-BlackLogo.png" alt="Equal Housing Opportunity" style="height: 40px; width: auto; opacity: 0.8;">
+            </div>
+            
+            <div id="noResultsMsg" class="no-results" style="display: none;">
+                <p>No affiliated business arrangements found matching your search.</p>
+            </div>
+        </div>
+    </main>
+
+    <footer class="premium-footer">
+        <div class="container text-center">
+            <a href="index.html" style="text-decoration: none;"><h2 class="footer-logo">VALTERA.</h2></a>
+            <p class="footer-tagline">Connecting Buyers With Quality Lenders</p>
+            <div class="footer-links">
+                <a href="partner.html">Partner With Us</a>
+                <a href="consumer-protection.html">Consumer Protection</a>
+                <a href="resources.html">Resources</a>
+            </div>
+            <p class="footer-copyright">© 2026 Valtera. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('abaSearchInput');
+            const abaCards = document.querySelectorAll('.aba-card');
+            const noResultsMsg = document.getElementById('noResultsMsg');
+            const abaEhoContainer = document.getElementById('abaEhoContainer');
+
+            abaCards.forEach(card => card.style.display = 'none');
+
+            searchInput.addEventListener('keyup', function() {
+                const searchTerm = searchInput.value.toLowerCase();
+                let visibleCount = 0;
+
+                if (searchTerm.length === 0) {
+                    abaCards.forEach(card => card.style.display = 'none');
+                    noResultsMsg.style.display = 'none';
+                    abaEhoContainer.style.display = 'none';
+                    return;
+                }
+
+                abaCards.forEach(card => {
+                    if (card.textContent.toLowerCase().includes(searchTerm)) {
+                        card.style.display = 'block';
+                        visibleCount++;
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+
+                if (visibleCount === 0) {
+                    noResultsMsg.style.display = 'block';
+                    abaEhoContainer.style.display = 'none';
+                } else {
+                    noResultsMsg.style.display = 'none';
+                    abaEhoContainer.style.display = 'flex'; 
+                }
+            });
+        });
+    </script>
+</body>
+</html>
