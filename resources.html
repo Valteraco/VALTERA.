@@ -47,24 +47,32 @@
         <div class="container">
             <header class="text-center search-header">
                 <h1 class="page-title text-dark">Additional Resources</h1>
-                <h2 class="search-subtitle">Search Affiliated Business Arrangements (ABAs)</h2>
+                <!-- UPDATED SUBTITLE LINE SPLIT -->
+                <h2 class="search-subtitle">Search Affiliated Business Arrangements <span class="aba-break">(ABAs)</span></h2>
             </header>
 
             <div class="search-bar-wrapper">
-                <input type="text" id="abaSearchInput" class="aba-search-input" placeholder="Search by Real Estate Brokerage or Mortgage Lender...">
+                <!-- UPDATED PLACEHOLDER VALUE -->
+                <input type="text" id="abaSearchInput" class="aba-search-input" placeholder="Search by Real Estate Brokerage or Lender...">
                 <span class="search-icon">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                 </span>
             </div>
 
             <div class="aba-results-container" id="abaResults">
-                <!-- UPDATED HTML FOR POINT 8 -->
+                <!-- UPDATED STRUCTURAL SEGMENTS FOR ALL BOXES -->
                 <div class="aba-card">
                     <div class="aba-card-header">
                         <h3>
-                            <span class="aba-entity">Horizon Realty Group <span>(Real Estate Services)</span></span>
-                            <span class="aba-hyphen"> - </span>
-                            <span class="aba-entity">BlueStone Mortgage <span>(Mortgage Services)</span></span>
+                            <span class="aba-block">
+                                <span class="aba-name">Horizon Realty Group</span>
+                                <span class="aba-dept">(Real Estate Services)</span>
+                            </span>
+                            <span class="aba-spacer-gap"></span>
+                            <span class="aba-block">
+                                <span class="aba-name">BlueStone Mortgage</span>
+                                <span class="aba-dept">(Mortgage Services)</span>
+                            </span>
                         </h3>
                         <span class="nmls-badge">NMLS #123456</span>
                     </div>
@@ -76,12 +84,19 @@
                         </ul>
                     </div>
                 </div>
+                
                 <div class="aba-card">
                     <div class="aba-card-header">
                         <h3>
-                            <span class="aba-entity">Vanguard Property Associates <span>(Real Estate Services)</span></span>
-                            <span class="aba-hyphen"> - </span>
-                            <span class="aba-entity">First Choice Lending <span>(Mortgage Services)</span></span>
+                            <span class="aba-block">
+                                <span class="aba-name">Vanguard Property Associates</span>
+                                <span class="aba-dept">(Real Estate Services)</span>
+                            </span>
+                            <span class="aba-spacer-gap"></span>
+                            <span class="aba-block">
+                                <span class="aba-name">First Choice Lending</span>
+                                <span class="aba-dept">(Mortgage Services)</span>
+                            </span>
                         </h3>
                         <span class="nmls-badge">NMLS #654321</span>
                     </div>
@@ -93,12 +108,19 @@
                         </ul>
                     </div>
                 </div>
+                
                 <div class="aba-card">
                     <div class="aba-card-header">
                         <h3>
-                            <span class="aba-entity">Sterling Real Estate <span>(Real Estate Services)</span></span>
-                            <span class="aba-hyphen"> - </span>
-                            <span class="aba-entity">Beacon Home Funding <span>(Mortgage Services)</span></span>
+                            <span class="aba-block">
+                                <span class="aba-name">Sterling Real Estate</span>
+                                <span class="aba-dept">(Real Estate Services)</span>
+                            </span>
+                            <span class="aba-spacer-gap"></span>
+                            <span class="aba-block">
+                                <span class="aba-name">Beacon Home Funding</span>
+                                <span class="aba-dept">(Mortgage Services)</span>
+                            </span>
                         </h3>
                         <span class="nmls-badge">NMLS #987654</span>
                     </div>
@@ -137,7 +159,6 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Hamburger Menu Engine & Click Outside to Close
             const hamburger = document.getElementById('hamburger');
             const navLinks = document.getElementById('navLinks');
 

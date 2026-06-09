@@ -476,35 +476,13 @@ html, body {
 .aba-officers li { font-size: 1rem; color: var(--text-muted); margin-bottom: 0.75rem; line-height: 1.6; }
 .no-results { text-align: center; font-size: 1.25rem; color: var(--text-muted); padding: 3rem; }
 
-/* --- PARTNER FORM PAGE --- */
-.partner-section { padding: 6rem 0; min-height: 85vh; }
-.partner-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center; }
-.partner-headline { font-family: var(--font-serif); font-size: 3.5rem; color: var(--primary-color); line-height: 1.1; margin: 1rem 0 2rem; }
-.partner-intro { font-size: 1.2rem; color: var(--text-dark); line-height: 1.7; margin-bottom: 3rem; }
-.standards-list { display: flex; flex-direction: column; gap: 2rem; }
-.standard-item h4 { font-family: var(--font-sans); font-size: 1.1rem; color: var(--primary-color); margin-bottom: 0.5rem; font-weight: 600; }
-.standard-item p { color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; }
-.premium-form-box { background: #ffffff; border: 1px solid #EAEAEA; padding: 3.5rem; border-radius: 4px; box-shadow: 0 15px 40px rgba(0,0,0,0.04); }
-.premium-form-box h3 { font-family: var(--font-serif); font-size: 1.8rem; color: var(--text-dark); margin-bottom: 0.5rem; }
-.form-instructions { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 2.5rem; line-height: 1.5; }
-.form-group { display: flex; flex-direction: column; margin-bottom: 1.5rem; }
-.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
-.premium-form-box label { font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-dark); margin-bottom: 0.5rem; }
-.premium-form-box input, .premium-form-box select, .premium-form-box textarea { border: 1px solid #DCE1E5; padding: 0.85rem 1rem; font-family: var(--font-sans); font-size: 1rem; border-radius: 4px; color: var(--text-dark); background-color: #ffffff; transition: border-color 0.2s ease, box-shadow 0.2s ease; }
-.premium-form-box input:focus, .premium-form-box select:focus, .premium-form-box textarea:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(30, 63, 51, 0.08); }
-.form-success-message { text-align: center; padding: 2rem 0; animation: fadeIn 0.4s ease-out; }
-.form-success-message h4 { font-family: var(--font-serif); font-size: 1.75rem; color: var(--primary-color); margin-bottom: 1rem; }
+/* --- MASTER DESIGN SYSTEM UTILITIES FOR CUSTOM SEGMENTS --- */
+.aba-block { display: inline-block; vertical-align: top; }
+.aba-name { display: inline; font-weight: inherit; color: inherit; }
+.aba-dept { display: inline; font-weight: 400; }
+.aba-spacer-gap { display: inline; }
 
-/* --- FOOTER --- */
-.premium-footer { background-color: #ffffff; padding: 4rem 0 2rem; border-top: 1px solid #EAEAEA;}
-.footer-logo { font-family: var(--font-serif); font-size: 1.5rem; color: var(--primary-color); letter-spacing: 2px; margin-bottom: 0.5rem; }
-.footer-tagline { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 2rem; }
-.footer-links { display: flex; justify-content: center; flex-wrap: wrap; gap: 2rem; margin-bottom: 3rem; }
-.footer-links a { color: var(--text-dark); text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: color 0.3s ease; }
-.footer-links a:hover { color: var(--accent-color); }
-.footer-copyright { color: #999999; font-size: 0.8rem; }
-
-/* --- RESPONSIVE MEDIA QUERIES (Mobile Optimization) --- */
+/* --- RESPONSIVE MEDIA QUERIES (Mobile Optimization overrides) --- */
 @media (max-width: 1024px) {
     .mission-card h3 { white-space: normal; } 
 }
@@ -515,8 +493,6 @@ html, body {
     .premium-form-box { padding: 2rem; }
     
     .mission-grid { flex-direction: column; gap: 2rem; }
-    
-    /* Keeps Etymology Latin words side-by-side on mobile */
     .etymology-grid { flex-direction: row; gap: 2rem; } 
     .word-divider { width: 2px; height: 80px; }
     
@@ -525,23 +501,32 @@ html, body {
 }
 
 @media (max-width: 768px) {
-    /* POINT 4: Two-column grid layout for lender results on mobile */
+    /* POINT 2: True pixel-aligned layout for lender grid cards */
     .lender-grid:not(.list-layout) { 
-        grid-template-columns: 1fr 1fr; 
-        gap: 0.75rem; 
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important; 
+        grid-auto-rows: 1fr !important;
+        gap: 0.5rem !important; 
+        width: 100% !important;
+        box-sizing: border-box !important;
     }
-    .lender-grid:not(.list-layout) .premium-card { padding: 1rem; }
-    .lender-grid:not(.list-layout) .lender-name { font-size: 1rem; }
-    .lender-grid:not(.list-layout) .premium-rating { font-size: 0.8rem; letter-spacing: 0; }
-    .lender-grid:not(.list-layout) .rating-number { font-size: 0.8rem; margin-left: 0.25rem; }
-    .lender-grid:not(.list-layout) .btn-outline-primary { padding: 0.5rem; font-size: 0.8rem; }
-    .lender-grid:not(.list-layout) .expandable-text { font-size: 0.8rem; }
+    .lender-grid:not(.list-layout) .premium-card { 
+        padding: 1rem !important; 
+        height: 100% !important;
+        box-sizing: border-box !important;
+        margin: 0 !important;
+    }
+    .lender-grid:not(.list-layout) .lender-name { font-size: 0.95rem !important; }
+    .lender-grid:not(.list-layout) .premium-rating { font-size: 0.75rem !important; letter-spacing: 0 !important; }
+    .lender-grid:not(.list-layout) .rating-number { font-size: 0.75rem !important; margin-left: 0.25rem !important; }
+    .lender-grid:not(.list-layout) .btn-outline-primary { padding: 0.5rem !important; font-size: 0.75rem !important; }
+    .lender-grid:not(.list-layout) .expandable-text { font-size: 0.75rem !important; }
 
     .lender-grid.list-layout { grid-template-columns: 1fr; }
     .lender-grid.list-layout .premium-card { flex-direction: column; align-items: flex-start; gap: 1rem; padding: 1.5rem; }
     .lender-grid.list-layout .btn-outline-primary { width: 100%; }
     
-    /* --- UPGRADED MOBILE NAVIGATION --- */
+    /* --- NAVIGATION --- */
     .nav-container { padding: 1.25rem 2rem; position: relative; }
     .hamburger { display: block; } 
     
@@ -581,24 +566,42 @@ html, body {
     .hamburger.active .bar:nth-child(2) { opacity: 0; }
     .hamburger.active .bar:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
-    /* POINT 2: Mission Cards side-by-side on mobile */
+    /* POINT 5: All three cards fully visible side-by-side simultaneously */
     .mission-grid { 
-        flex-direction: row; 
-        flex-wrap: nowrap; 
-        overflow-x: auto; 
-        gap: 0.5rem; 
-        padding-bottom: 1rem; 
+        flex-direction: row !important; 
+        flex-wrap: nowrap !important; 
+        justify-content: space-between !important;
+        gap: 0.25rem !important; 
+        overflow: hidden !important;
+        padding-bottom: 0 !important;
     }
     .mission-card {
-        border: 1px solid #EAEAEA;
-        border-radius: 4px;
-        padding: 1.5rem 1rem;
-        margin-bottom: 0;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.03);
-        flex: 0 0 calc(85vw - 2rem); /* Creates a sleek swipeable row */
+        border: 1px solid #EAEAEA !important;
+        border-radius: 4px !important;
+        padding: 0.75rem 0.25rem !important;
+        margin-bottom: 0 !important;
+        box-shadow: none !important;
+        flex: 1 !important;
+        min-width: 0 !important;
+    }
+    .mission-card .mission-icon {
+        margin-bottom: 0.5rem !important;
+    }
+    .mission-card .mission-icon svg {
+        width: 20px !important;
+        height: 20px !important;
+    }
+    .mission-card h3 {
+        font-size: 0.7rem !important;
+        letter-spacing: -0.2px !important;
+        margin-bottom: 0.25rem !important;
+    }
+    .mission-card p {
+        font-size: 0.58rem !important;
+        line-height: 1.3 !important;
     }
 
-    /* --- ABA SEARCH & RESULTS ALIGNMENT --- */
+    /* --- ABA SEARCH CONFIGURATION --- */
     .aba-card-header {
         flex-direction: column;
         gap: 1rem;
@@ -607,36 +610,53 @@ html, body {
         max-width: 100%;
     }
     
-    /* POINT 7: Smaller Placeholder Text */
+    /* POINT 7: Precise sizing adjustment for structural inputs */
     .aba-search-input::placeholder {
-        font-size: clamp(0.7rem, 2.5vw, 1.25rem); 
+        font-size: 0.8rem !important; 
     }
 
-    /* POINT 8: Stacked ABA Entities fitting on one line */
-    .aba-hyphen { display: none; }
-    .aba-entity { 
-        display: block; 
-        white-space: nowrap; 
-        overflow: hidden; 
-        text-overflow: ellipsis; 
-        font-size: clamp(0.85rem, 4vw, 1.2rem); 
+    /* POINT 8: Multi-line segments with visual spacing gaps */
+    .aba-hyphen { display: none !important; }
+    .aba-block { 
+        display: block !important; 
+        width: 100% !important;
+    }
+    .aba-name { 
+        display: block !important; 
+        font-size: 1.15rem !important;
+        line-height: 1.3 !important;
+    }
+    .aba-dept { 
+        display: block !important; 
+        font-size: 0.85rem !important; 
+        color: var(--text-muted) !important;
+        margin-top: 0.15rem !important;
+    }
+    .aba-spacer-gap { 
+        display: block !important; 
+        height: 0.75rem !important; 
     }
 
-    /* POINT 3: Footer links side-by-side horizontally */
+    /* POINT 4: High-contrast responsive footer typography overlay */
     .footer-links {
-        flex-direction: row; 
-        flex-wrap: nowrap;
-        justify-content: center;
-        align-items: center;
-        gap: 0.5rem;
+        flex-direction: column !important; 
+        width: 100% !important;
+        gap: 1.25rem !important;
     }
     .footer-links a {
-        font-size: clamp(0.65rem, 2.5vw, 0.9rem);
-        white-space: nowrap;
-        padding: 0 0.2rem;
+        font-size: 1.35rem !important;
+        font-weight: 600 !important;
+        display: block !important;
+        text-align: center !important;
+        width: 100% !important;
+        padding: 0 !important;
+    }
+    .footer-copyright {
+        font-size: 0.7rem !important;
+        margin-top: 1rem !important;
     }
 
-    /* --- HERO ADJUSTMENTS --- */
+    /* --- HERO BACKGROUND & INTERACTION --- */
     .hero-title { font-size: 2.5rem; }
     
     .hero-subtitle { 
@@ -665,24 +685,28 @@ html, body {
     .hero-image-overlay { z-index: 1; }
     .hero-content { z-index: 2; position: relative; }
     
-    /* --- TYPOGRAPHY & SPACING FIXES --- */
     .partner-headline { font-size: 2.5rem; }
     .section-title { font-size: 2rem; }
     
-    /* POINT 6: Resources page titles fitting on one line */
+    /* POINT 6: Resources text split on independent lines */
     .search-header .page-title { 
         white-space: nowrap; 
-        font-size: clamp(1.2rem, 6vw, 2.2rem); 
+        font-size: 2.2rem !important; 
     }
     .search-subtitle {
-        white-space: nowrap; 
-        font-size: clamp(0.85rem, 4vw, 1.5rem);
+        white-space: normal !important; 
+        font-size: 1.35rem !important;
+        line-height: 1.4 !important;
+    }
+    .aba-break { 
+        display: block !important; 
+        margin-top: 0.4rem !important;
     }
     
     .aba-card { padding: 1.5rem; }
     .commitment-box { padding: 1.5rem; }
     
-    /* POINT 1: Etymology Conclusion Alignment */
+    /* POINT 1: Center-aligned Etymology block text */
     .etymology-conclusion {
         text-align: center !important;
         font-size: 1.05rem;
@@ -706,20 +730,58 @@ html, body {
         height: 1.5rem; 
     }
     
-    /* POINT 5: Modal Officer Layout Side-by-Side */
+    /* POINT 3: Expanded loan officer component alignment with inline dropdown button */
     .modal-container { padding: 1.5rem; width: 95%; }
     .officer-profile { 
-        flex-direction: row; /* Overrides the previous stacking */
-        align-items: flex-start; 
-        text-align: left; 
-        gap: 1rem;
+        display: flex !important;
+        flex-direction: row !important; 
+        flex-wrap: wrap !important;
+        align-items: flex-start !important; 
+        text-align: left !important; 
+        gap: 1rem !important;
     }
     .officer-avatar {
-        width: 60px;
-        height: 60px;
-        font-size: 1.2rem;
+        flex: 0 0 calc(45% - 0.5rem) !important;
+        width: 100% !important;
+        height: auto !important;
+        aspect-ratio: 1/1 !important;
+        font-size: 1.5rem !important;
+        border-radius: 4px !important;
     }
-    .officer-contact { text-align: left; }
+    .officer-info {
+        flex: 0 0 calc(55% - 0.5rem) !important;
+        width: 100% !important;
+        display: flex !important;
+        flex-direction: column !important;
+    }
+    .officer-profile .expandable-wrapper {
+        flex: 0 0 100% !important;
+        order: 3 !important;
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: flex-start !important;
+        width: 100% !important;
+        margin-top: 0.5rem !important;
+        margin-bottom: 1rem !important;
+    }
+    .officer-profile .expandable-text {
+        flex: 1 !important;
+        text-align: left !important;
+    }
+    .officer-profile .expandable-toggle-btn {
+        position: static !important;
+        transform: none !important;
+        display: block !important;
+        margin-left: 0.5rem !important;
+    }
+    .officer-profile .expanded .expandable-toggle-btn {
+        transform: rotate(180deg) !important;
+    }
+    .officer-contact { 
+        flex: 0 0 100% !important;
+        order: 4 !important;
+        text-align: left !important; 
+    }
     
     .bg-ivory, .partner-section, .aba-search-section, .mission-section, .etymology-section, .partner-cta { padding: 3rem 0; }
 }
