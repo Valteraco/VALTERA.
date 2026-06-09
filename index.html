@@ -4,12 +4,15 @@
    <meta charset="UTF-8">
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
    <title>Valtera | Connecting Buyers With Quality Lenders</title>
+   <!-- Open Graph / Facebook / LinkedIn / iMessage -->
    <meta property="og:type" content="website">
    <meta property="og:url" content="https://valteraco.com/">
    <meta property="og:title" content="Valtera | Connecting Buyers With Quality Lenders">
    <meta property="og:description" content="Connect with trusted, vetted lenders in your area. We've done the research so you don't have to.">
    <meta property="og:image" content="https://valteraco.com/Valtera-Link-Preview.png">
 
+
+   <!-- Twitter -->
    <meta property="twitter:card" content="summary_large_image">
    <meta property="twitter:url" content="https://valteraco.com/">
    <meta property="twitter:title" content="Valtera | Connecting Buyers With Quality Lenders">
@@ -23,6 +26,7 @@
 </head>
 <body>
 
+
    <nav class="valtera-nav">
        <div class="nav-container">
            <a href="index.html" class="nav-logo">VALTERA.</a>
@@ -33,6 +37,7 @@
                <span class="bar"></span>
            </button>
 
+
            <div class="nav-links" id="navLinks">
                <a href="partner.html">Partner With Us</a>
                <a href="consumer-protection.html">Consumer Protection</a>
@@ -40,6 +45,7 @@
            </div>
        </div>
    </nav>
+
 
    <header class="hero-section">
        <div class="hero-image-overlay"></div>
@@ -62,6 +68,7 @@
        </div>
    </header>
 
+
    <section class="lender-results-section bg-ivory">
        <div class="container">
           
@@ -74,7 +81,9 @@
                </button>
            </div>
 
+
            <div class="lender-grid" id="lenderGrid"></div>
+
 
            <div id="comingSoonMsg" class="coming-soon-box" style="display: none;">
                <div class="coming-soon-icon">
@@ -85,6 +94,7 @@
            </div>
        </div>
    </section>
+
 
    <section class="mission-section">
        <div class="container">
@@ -99,14 +109,15 @@
                    <p>Buyers deserve transparent access to multiple lending options. By comparing rates rather than settling for a single preferred lender, you can save an average of <strong>$2,300 in upfront costs.</strong></p>
                </div>
 
+
                <div class="mission-card">
                    <div class="mission-icon">
-                       <svg class="desktop-icon" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-                       <svg class="mobile-icon" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><polyline points="9 12 11 14 15 10"></polyline></svg>
+                       <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                    </div>
                    <h3>Uncompromising Standards</h3>
                    <p>We carefully vet every lender for compliance, competitiveness, and service. We connect you with professionals who combine national-level expertise with deep local market insight.</p>
                </div>
+
 
                <div class="mission-card">
                    <div class="mission-icon">
@@ -116,9 +127,11 @@
                    <p>Whether you're an agent, brokerage, or lender, our goal is shared: to build trust and foster collaboration. We have one single focus—delivering better outcomes and empowering the buyer.</p>
                </div>
 
+
            </div>
        </div>
    </section>
+
 
    <section class="etymology-section">
        <div class="container">
@@ -136,11 +149,13 @@
                    <p>"Earth, land, or soil."</p>
                </div>
            </div>
+           <!-- UPDATED TEXT: Removed the <br> line break to match Point 1 -->
            <p class="etymology-conclusion text-center">
                We united these words to reflect our core goal for the buyer: to secure real estate purchases that are financially healthy and enduringly strong.
            </p>
        </div>
    </section>
+
 
    <section class="partner-cta">
        <div class="container text-center">
@@ -149,6 +164,7 @@
            <a href="partner.html" class="btn-accent">Partner With Us</a>
        </div>
    </section>
+
 
    <footer class="premium-footer">
        <div class="container text-center">
@@ -163,6 +179,7 @@
        </div>
    </footer>
 
+
    <div id="officerModal" class="modal-overlay">
        <div class="modal-container">
            <button class="close-modal">&times;</button>
@@ -172,11 +189,13 @@
        </div>
    </div>
 
+
    <script>
        document.addEventListener('DOMContentLoaded', function() {
            // Hamburger Menu Engine & Click Outside to Close
            const hamburger = document.getElementById('hamburger');
            const navLinks = document.getElementById('navLinks');
+
 
            if(hamburger && navLinks) {
                hamburger.addEventListener('click', function(event) {
@@ -184,6 +203,7 @@
                    hamburger.classList.toggle('active');
                    navLinks.classList.toggle('active');
                });
+
 
                document.addEventListener('click', function(event) {
                    if (navLinks.classList.contains('active') && !navLinks.contains(event.target) && !hamburger.contains(event.target)) {
@@ -197,6 +217,7 @@
                });
            }
 
+
            const stateDropdown = document.getElementById('stateDropdown');
            const lenderSection = document.querySelector('.lender-results-section');
            const lenderGrid = document.getElementById('lenderGrid');
@@ -207,6 +228,7 @@
            const modalOverlay = document.getElementById('officerModal');
            const modalContainer = document.querySelector('.modal-container');
            const closeModalBtn = document.querySelector('.close-modal');
+
 
            const lenderData = {
                "UT": [
@@ -305,6 +327,7 @@
                ]
            };
 
+
            function checkOverflows(container) {
                setTimeout(() => {
                    container.querySelectorAll('.expandable-wrapper').forEach(wrapper => {
@@ -322,6 +345,7 @@
                }, 50);
            }
 
+
            function renderGrid(state) {
                lenderGrid.innerHTML = '';
                lenderData[state].forEach((lender, index) => {
@@ -332,6 +356,7 @@
                    const logoHtml = lender.website
                        ? `<a href="${lender.website}" target="_blank" style="text-decoration: none; color: inherit;">${logoInner}</a>`
                        : logoInner;
+
 
                    const card = document.createElement('div');
                    card.className = 'premium-card';
@@ -351,6 +376,7 @@
                    lenderGrid.appendChild(card);
                });
 
+
                document.querySelectorAll('.btn-outline-primary').forEach(button => {
                    button.addEventListener('click', function() {
                        const st = this.getAttribute('data-state');
@@ -359,8 +385,10 @@
                    });
                });
 
+
                checkOverflows(lenderGrid);
            }
+
 
            function openModal(lender) {
                const modalHeader = document.querySelector('.modal-header');
@@ -372,48 +400,54 @@
                    ? `<a href="${lender.website}" target="_blank" style="text-decoration: none; color: inherit;">${logoInner}</a>`
                    : logoInner;
 
+
                modalHeader.innerHTML = `
                    ${logoHtml}
                    <div class="premium-rating">★★★★★ <span class="rating-number">${lender.rating}</span></div>
                `;
 
+
                const officersContainer = document.getElementById('modalOfficersContainer');
                officersContainer.innerHTML = '';
+
 
                lender.officers.forEach((officer, index) => {
                    const avatarImg = officer.photo
                        ? `<img src="${officer.photo}" alt="${officer.name}" class="officer-avatar" style="object-fit: cover;">`
                        : `<div class="officer-avatar" style="display:flex; align-items:center; justify-content:center; background:#EAEAEA; font-size:1.5rem; font-family:var(--font-serif); color:var(--primary-color);">${officer.name.charAt(0)}</div>`;
 
+
                    const avatarHtml = officer.profileUrl
                        ? `<a href="${officer.profileUrl}" target="_blank" style="text-decoration:none;">${avatarImg}</a>`
                        : avatarImg;
+
 
                    const nameHtml = officer.profileUrl
                        ? `<a href="${officer.profileUrl}" target="_blank" style="text-decoration:none; color:inherit;"><h5 class="officer-name" style="margin-bottom:0.2rem;">${officer.name}</h5></a>`
                        : `<h5 class="officer-name" style="margin-bottom:0.2rem;">${officer.name}</h5>`;
 
+
                    const nmlsHtml = `<p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.8rem; font-weight: 500; letter-spacing: 0.5px;">${officer.nmls}</p>`;
+
 
                    const isLast = index === lender.officers.length - 1;
                    const borderStyle = isLast ? 'border-bottom: none; margin-bottom: 0; padding-bottom: 0;' : 'border-bottom: 1px solid #EAEAEA; margin-bottom: 2.5rem; padding-bottom: 2.5rem;';
 
-                   // POINT 3: Updated JS Template injection to separate blocks for the grid overlay
+
                    officersContainer.innerHTML += `
                        <div class="officer-profile" style="${borderStyle}">
                            ${avatarHtml}
                            <div class="officer-info" style="width: 100%;">
-                               <div class="officer-header-mobile">
-                                   ${nameHtml}
-                                   ${nmlsHtml}
-                               </div>
-                               
-                               <div class="expandable-wrapper mobile-bio-wrapper" title="Click to read more" style="margin-bottom: 1.5rem;">
+                               ${nameHtml}
+                               ${nmlsHtml}
+                              
+                               <div class="expandable-wrapper" title="Click to read more" style="margin-bottom: 1.5rem;">
                                    <div class="expandable-text">${officer.bio}</div>
                                    <div class="expandable-toggle-btn">
                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
                                    </div>
                                </div>
+
 
                                <div class="officer-contact">
                                    <a href="tel:${officer.phone.replace(/\D/g,'')}">${officer.phone}</a>
@@ -424,6 +458,7 @@
                    `;
                });
 
+
                officersContainer.innerHTML += `
                    <div style="display: flex; justify-content: flex-end; align-items: center; gap: 15px; margin-top: 1rem; padding-top: 1.5rem; border-top: 1px solid #EAEAEA;">
                        <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 500;">${lender.lenderNmls}</span>
@@ -431,14 +466,17 @@
                    </div>
                `;
 
+
                modalOverlay.classList.add('active');
                document.body.style.overflow = 'hidden';
+
 
                setTimeout(() => {
                    modalContainer.scrollTop = 0;
                    checkOverflows(modalContainer);
                }, 10);
            }
+
 
            stateDropdown.addEventListener('change', function() {
                const selectedState = this.value;
@@ -460,11 +498,13 @@
                }, 100);
            });
 
+
            btnGrid.addEventListener('click', function() {
                lenderGrid.classList.remove('list-layout');
                btnGrid.classList.add('active');
                btnList.classList.remove('active');
            });
+
 
            btnList.addEventListener('click', function() {
                lenderGrid.classList.add('list-layout');
@@ -472,10 +512,12 @@
                btnGrid.classList.remove('active');
            });
 
+
            closeModalBtn.addEventListener('click', function() {
                modalOverlay.classList.remove('active');
                document.body.style.overflow = 'auto';
            });
+
 
            modalOverlay.addEventListener('click', function(event) {
                if (event.target === modalOverlay) {

@@ -4,12 +4,15 @@
    <meta charset="UTF-8">
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
    <title>Resources | Valtera</title>
+   <!-- Open Graph / Facebook / LinkedIn / iMessage -->
    <meta property="og:type" content="website">
    <meta property="og:url" content="https://valteraco.com/">
    <meta property="og:title" content="Valtera | Connecting Buyers With Quality Lenders">
    <meta property="og:description" content="Connect with trusted, vetted lenders in your area. We've done the research so you don't have to.">
    <meta property="og:image" content="https://valteraco.com/Valtera-Link-Preview.png">
 
+
+   <!-- Twitter -->
    <meta property="twitter:card" content="summary_large_image">
    <meta property="twitter:url" content="https://valteraco.com/">
    <meta property="twitter:title" content="Valtera | Connecting Buyers With Quality Lenders">
@@ -23,6 +26,7 @@
 </head>
 <body>
 
+
    <nav class="valtera-nav">
        <div class="nav-container">
            <a href="index.html" class="nav-logo">VALTERA.</a>
@@ -33,6 +37,7 @@
                <span class="bar"></span>
            </button>
 
+
            <div class="nav-links" id="navLinks">
                <a href="partner.html">Partner With Us</a>
                <a href="consumer-protection.html">Consumer Protection</a>
@@ -41,12 +46,14 @@
        </div>
    </nav>
 
+
    <main class="aba-search-section">
        <div class="container">
            <header class="text-center search-header">
                <h1 class="page-title text-dark">Additional Resources</h1>
-               <h2 class="search-subtitle">Search Affiliated Business Arrangements <br class="mobile-break">(ABAs)</h2>
+               <h2 class="search-subtitle">Search Affiliated Business Arrangements (ABAs)</h2>
            </header>
+
 
            <div class="search-bar-wrapper">
                <input type="text" id="abaSearchInput" class="aba-search-input" placeholder="Search by Real Estate Brokerage or Mortgage Lender...">
@@ -55,13 +62,15 @@
                </span>
            </div>
 
+
            <div class="aba-results-container" id="abaResults">
+               <!-- UPDATED HTML FOR POINT 8 -->
                <div class="aba-card">
                    <div class="aba-card-header">
-                       <h3 class="aba-title">
-                           <span class="aba-group"><span class="aba-entity">Horizon Realty Group</span> <span class="aba-service">(Real Estate Services)</span></span>
+                       <h3>
+                           <span class="aba-entity">Horizon Realty Group <span>(Real Estate Services)</span></span>
                            <span class="aba-hyphen"> - </span>
-                           <span class="aba-group"><span class="aba-entity">BlueStone Mortgage</span> <span class="aba-service">(Mortgage Services)</span></span>
+                           <span class="aba-entity">BlueStone Mortgage <span>(Mortgage Services)</span></span>
                        </h3>
                        <span class="nmls-badge">NMLS #123456</span>
                    </div>
@@ -75,10 +84,10 @@
                </div>
                <div class="aba-card">
                    <div class="aba-card-header">
-                       <h3 class="aba-title">
-                           <span class="aba-group"><span class="aba-entity">Vanguard Property Associates</span> <span class="aba-service">(Real Estate Services)</span></span>
+                       <h3>
+                           <span class="aba-entity">Vanguard Property Associates <span>(Real Estate Services)</span></span>
                            <span class="aba-hyphen"> - </span>
-                           <span class="aba-group"><span class="aba-entity">First Choice Lending</span> <span class="aba-service">(Mortgage Services)</span></span>
+                           <span class="aba-entity">First Choice Lending <span>(Mortgage Services)</span></span>
                        </h3>
                        <span class="nmls-badge">NMLS #654321</span>
                    </div>
@@ -92,10 +101,10 @@
                </div>
                <div class="aba-card">
                    <div class="aba-card-header">
-                       <h3 class="aba-title">
-                           <span class="aba-group"><span class="aba-entity">Sterling Real Estate</span> <span class="aba-service">(Real Estate Services)</span></span>
+                       <h3>
+                           <span class="aba-entity">Sterling Real Estate <span>(Real Estate Services)</span></span>
                            <span class="aba-hyphen"> - </span>
-                           <span class="aba-group"><span class="aba-entity">Beacon Home Funding</span> <span class="aba-service">(Mortgage Services)</span></span>
+                           <span class="aba-entity">Beacon Home Funding <span>(Mortgage Services)</span></span>
                        </h3>
                        <span class="nmls-badge">NMLS #987654</span>
                    </div>
@@ -109,6 +118,7 @@
                </div>
            </div>
 
+
            <div id="abaEhoContainer" style="display: none; justify-content: flex-end; max-width: 900px; margin: 1rem auto 0;">
                <img src="EqualHousingO-BlackLogo.png" alt="Equal Housing Opportunity" style="height: 40px; width: auto; opacity: 0.8;">
            </div>
@@ -118,6 +128,7 @@
            </div>
        </div>
    </main>
+
 
    <footer class="premium-footer">
        <div class="container text-center">
@@ -132,11 +143,13 @@
        </div>
    </footer>
 
+
    <script>
        document.addEventListener('DOMContentLoaded', function() {
            // Hamburger Menu Engine & Click Outside to Close
            const hamburger = document.getElementById('hamburger');
            const navLinks = document.getElementById('navLinks');
+
 
            if(hamburger && navLinks) {
                hamburger.addEventListener('click', function(event) {
@@ -144,6 +157,7 @@
                    hamburger.classList.toggle('active');
                    navLinks.classList.toggle('active');
                });
+
 
                document.addEventListener('click', function(event) {
                    if (navLinks.classList.contains('active') && !navLinks.contains(event.target) && !hamburger.contains(event.target)) {
@@ -157,27 +171,20 @@
                });
            }
 
+
            const searchInput = document.getElementById('abaSearchInput');
            const abaCards = document.querySelectorAll('.aba-card');
            const noResultsMsg = document.getElementById('noResultsMsg');
            const abaEhoContainer = document.getElementById('abaEhoContainer');
 
-           // POINT 7: Update Placeholder on Mobile
-           const updatePlaceholder = () => {
-               if(window.innerWidth <= 768) {
-                   searchInput.placeholder = "Search by Real Estate Brokerage or Lender...";
-               } else {
-                   searchInput.placeholder = "Search by Real Estate Brokerage or Mortgage Lender...";
-               }
-           };
-           window.addEventListener('resize', updatePlaceholder);
-           updatePlaceholder();
 
            abaCards.forEach(card => card.style.display = 'none');
+
 
            searchInput.addEventListener('keyup', function() {
                const searchTerm = searchInput.value.toLowerCase();
                let visibleCount = 0;
+
 
                if (searchTerm.length === 0) {
                    abaCards.forEach(card => card.style.display = 'none');
@@ -185,6 +192,7 @@
                    abaEhoContainer.style.display = 'none';
                    return;
                }
+
 
                abaCards.forEach(card => {
                    if (card.textContent.toLowerCase().includes(searchTerm)) {
@@ -194,6 +202,7 @@
                        card.style.display = 'none';
                    }
                });
+
 
                if (visibleCount === 0) {
                    noResultsMsg.style.display = 'block';
