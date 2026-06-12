@@ -806,20 +806,35 @@ html, body {
 }
 
 
-/* --- ISOLATED MOBILE FIXES V2 --- */
+/* --- ISOLATED MOBILE FIXES V3 --- */
 @media (max-width: 768px) {
     
-    /* FIX 4: Prevent text from sliding off the edge on all pages (including Partner With Us) */
+    /* FIX 4 (THE REAL CULPRITS): Prevent wide elements from stretching the screen */
     html, body {
         overflow-x: hidden !important;
         width: 100% !important;
+        position: relative !important;
     }
-    .container {
-        padding: 0 1.25rem !important; /* Gives the text a bit more breathing room */
+    .footer-links {
+        flex-wrap: wrap !important; /* Allows the footer links to stack instead of pushing wide */
+        row-gap: 1rem !important;
+    }
+    .container, .premium-form-box, .partner-info-side, .partner-form-side {
+        width: 100% !important;
+        max-width: 100vw !important;
+        box-sizing: border-box !important; /* Keeps padding inside the width limits */
+    }
+    .form-row {
+        display: flex !important;
+        flex-direction: column !important; /* Stacks form inputs on mobile so they don't push wide */
+        gap: 1.5rem !important;
+    }
+    input, select, textarea {
+        max-width: 100% !important;
         box-sizing: border-box !important;
     }
     .partner-intro, .standard-item p, h1, h2, h3, h4, p, span {
-        overflow-wrap: break-word !important; /* Forces long text to break instead of pushing off screen */
+        overflow-wrap: break-word !important; 
         word-wrap: break-word !important;
         max-width: 100% !important;
     }
@@ -830,6 +845,8 @@ html, body {
     }
     .aba-search-input {
         padding: 0.5rem !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
     }
     .aba-search-input::placeholder {
         font-size: 9px !important; 
