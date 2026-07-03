@@ -4,14 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Partner With Us | Valtera</title>
-    <!-- Open Graph / Facebook / LinkedIn / iMessage -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://valteraco.com/">
     <meta property="og:title" content="Valtera | Connecting Buyers With Quality Lenders">
     <meta property="og:description" content="Connect with trusted, vetted lenders in your area. We've done the research so you don't have to.">
     <meta property="og:image" content="https://valteraco.com/Valtera-Link-Preview.png">
 
-    <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="https://valteraco.com/">
     <meta property="twitter:title" content="Valtera | Connecting Buyers With Quality Lenders">
@@ -29,7 +27,6 @@
         <div class="nav-container">
             <a href="index.html" class="nav-logo">VALTERA.</a>
             
-            <!-- Premium Hamburger Button -->
             <button class="hamburger" id="hamburger" aria-label="Toggle navigation">
                 <span class="bar"></span>
                 <span class="bar"></span>
@@ -74,7 +71,7 @@
                     <h3>Application for Network Inclusion</h3>
                     <p class="form-instructions">Please provide your details below. Our compliance and relations team will review your inquiry and contact you accordingly.</p>
                     
-                    <form action="https://formspree.io/f/mjgqpynl" method="POST">
+                    <form id="partnerApplicationForm" action="https://formspree.io/f/mjgqpynl" method="POST">
                         <div class="form-group">
                             <label for="compName">Organization Name</label>
                             <input type="text" id="compName" name="Company Name" required placeholder="e.g., Sterling Lending Group">
@@ -109,8 +106,15 @@
                             <label for="message">Primary Coverage Area & Notes</label>
                             <textarea id="message" name="Message" rows="4" placeholder="Tell us about your active states and any other applicable information..."></textarea>
                         </div>
-                        <button type="submit" class="btn-primary w-100" style="padding: 1rem; font-size: 1rem; font-weight: 600;">Submit Application</button>
+                        <button type="submit" id="submitBtn" class="btn-primary w-100" style="padding: 1rem; font-size: 1rem; font-weight: 600;">Submit Application</button>
                     </form>
+
+                    <div id="formSuccessMessage" class="form-success-message" style="display: none;">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--primary-color)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 1rem;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                        <h4>Application Received</h4>
+                        <p style="color: var(--text-muted); margin-bottom: 2rem;">Thank you for your interest in joining the Valtera network. Our compliance and relations team will review your details and reach out shortly.</p>
+                        <button type="button" class="btn-outline-primary" id="submitAnotherBtn">Submit Another Application</button>
+                    </div>
                     
                 </div>
             </div>
@@ -129,21 +133,20 @@
             <p class="footer-copyright">© 2026 Valtera. All rights reserved.</p>
         </div>
     </footer>
+    
     <script>
-        // Hamburger Menu Engine & Click Outside to Close
         document.addEventListener('DOMContentLoaded', function() {
+            // --- Hamburger Menu Engine ---
             const hamburger = document.getElementById('hamburger');
             const navLinks = document.getElementById('navLinks');
 
             if(hamburger && navLinks) {
-                // Toggle menu
                 hamburger.addEventListener('click', function(event) {
-                    event.stopPropagation(); // Prevents instant bubbling
+                    event.stopPropagation(); 
                     hamburger.classList.toggle('active');
                     navLinks.classList.toggle('active');
                 });
 
-                // Close menu if clicking anywhere outside of it
                 document.addEventListener('click', function(event) {
                     if (navLinks.classList.contains('active') && !navLinks.contains(event.target) && !hamburger.contains(event.target)) {
                         hamburger.classList.remove('active');
@@ -151,9 +154,63 @@
                     }
                 });
                 
-                // Keep menu open if clicking inside the links container
                 navLinks.addEventListener('click', function(event) {
                     event.stopPropagation();
+                });
+            }
+
+            // --- Formspree AJAX Submission Engine ---
+            const partnerForm = document.getElementById('partnerApplicationForm');
+            const successMessage = document.getElementById('formSuccessMessage');
+            const submitBtn = document.getElementById('submitBtn');
+            const submitAnotherBtn = document.getElementById('submitAnotherBtn');
+
+            if (partnerForm) {
+                partnerForm.addEventListener('submit', async function(event) {
+                    event.preventDefault(); // Stops the page from redirecting
+                    
+                    const data = new FormData(partnerForm);
+                    const originalBtnText = submitBtn.innerHTML;
+                    
+                    // Show loading state
+                    submitBtn.innerHTML = 'Sending...';
+                    submitBtn.disabled = true;
+
+                    try {
+                        const response = await fetch(partnerForm.action, {
+                            method: partnerForm.method,
+                            body: data,
+                            headers: {
+                                'Accept': 'application/json'
+                            }
+                        });
+
+                        if (response.ok) {
+                            // Clear form, hide form, show success message
+                            partnerForm.reset();
+                            partnerForm.style.display = 'none';
+                            successMessage.style.display = 'block';
+                            
+                            // Scroll back to top of form box smoothly
+                            document.querySelector('.premium-form-box').scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        } else {
+                            alert('Oops! There was a problem submitting your form. Please try again.');
+                        }
+                    } catch (error) {
+                        alert('Oops! There was a problem submitting your form. Please check your connection and try again.');
+                    } finally {
+                        // Reset button state
+                        submitBtn.innerHTML = originalBtnText;
+                        submitBtn.disabled = false;
+                    }
+                });
+            }
+
+            // --- Allow them to submit another application if needed ---
+            if (submitAnotherBtn) {
+                submitAnotherBtn.addEventListener('click', function() {
+                    successMessage.style.display = 'none';
+                    partnerForm.style.display = 'block';
                 });
             }
         });
