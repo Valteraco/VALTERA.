@@ -74,12 +74,12 @@
                     <form id="partnerApplicationForm" action="https://formspree.io/f/mjgqpynl" method="POST">
                         <div class="form-group">
                             <label for="compName">Organization Name</label>
-                            <input type="text" id="compName" name="Company Name" required placeholder="e.g., Sterling Lending Group">
+                            <input type="text" id="compName" name="organization_name" required placeholder="e.g., Sterling Lending Group">
                         </div>
                         
                         <div class="form-group">
                             <label for="orgType">Entity Type</label>
-                            <select id="orgType" name="Entity Type" required>
+                            <select id="orgType" name="entity_type" required>
                                 <option value="" disabled selected>Select...</option>
                                 <option value="lender">Mortgage Lender / Financial Institution</option>
                                 <option value="brokerage">Real Estate Brokerage</option>
@@ -90,21 +90,21 @@
                         
                         <div class="form-group">
                             <label for="contactName">Primary Contact Person</label>
-                            <input type="text" id="contactName" name="Contact Name" required placeholder="Your full name">
+                            <input type="text" id="contactName" name="contact_name" required placeholder="Your full name">
                         </div>
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="contactEmail">Business Email</label>
-                                <input type="email" id="contactEmail" name="Email" required placeholder="name@company.com">
+                                <input type="email" id="contactEmail" name="email" required placeholder="name@company.com">
                             </div>
                             <div class="form-group">
                                 <label for="contactPhone">Direct Phone Line</label>
-                                <input type="tel" id="contactPhone" name="Phone" required placeholder="(555) 000-0000">
+                                <input type="tel" id="contactPhone" name="phone" required placeholder="(555) 000-0000">
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="message">Primary Coverage Area & Notes</label>
-                            <textarea id="message" name="Message" rows="4" placeholder="Tell us about your active states and any other applicable information..."></textarea>
+                            <textarea id="message" name="coverage_area_and_notes" rows="4" placeholder="Tell us about your active states and any other applicable information..."></textarea>
                         </div>
                         <button type="submit" id="submitBtn" class="btn-primary w-100" style="padding: 1rem; font-size: 1rem; font-weight: 600;">Submit Application</button>
                     </form>
@@ -159,7 +159,7 @@
                 });
             }
 
-            // --- Formspree AJAX Submission Engine ---
+            // --- Formspree AJAX Submission Engine Restored ---
             const partnerForm = document.getElementById('partnerApplicationForm');
             const successMessage = document.getElementById('formSuccessMessage');
             const submitBtn = document.getElementById('submitBtn');
@@ -167,7 +167,7 @@
 
             if (partnerForm) {
                 partnerForm.addEventListener('submit', async function(event) {
-                    event.preventDefault(); // Stops the page from redirecting
+                    event.preventDefault(); // Prevents the redirect to Formspree's site
                     
                     const data = new FormData(partnerForm);
                     const originalBtnText = submitBtn.innerHTML;
