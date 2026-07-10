@@ -1033,3 +1033,21 @@ html, body {
         white-space: nowrap !important;
     }
 }
+
+/* --- FINAL MOBILE TOUCH-UPS --- */
+@media (max-width: 768px) {
+    /* Unlinks the card heights so they act independently and fixes the weird gaps */
+    .lender-grid, 
+    .lender-grid.list-layout {
+        grid-auto-rows: auto !important;
+    }
+    
+    .lender-grid:not(.list-layout) .premium-card {
+        height: auto !important;
+    }
+
+    /* Adds breathing room below the sticky header when clicking Table of Contents links */
+    .content-block {
+        scroll-margin-top: 160px !important;
+    }
+}
