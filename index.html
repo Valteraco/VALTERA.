@@ -442,13 +442,13 @@
 
            closeModalBtn.addEventListener('click', function() {
                modalOverlay.classList.remove('active');
-               document.body.style.overflow = 'auto';
+               document.body.style.overflow = '';
            });
 
            modalOverlay.addEventListener('click', function(event) {
                if (event.target === modalOverlay) {
                    modalOverlay.classList.remove('active');
-                   document.body.style.overflow = 'auto';
+                   document.body.style.overflow = '';
                }
            });
        });
