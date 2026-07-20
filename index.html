@@ -463,18 +463,22 @@
                const modalContainer = document.querySelector('.modal-container');
                modalContainer.innerHTML = `
                    <style>
-                       /* Google Maps-style Pull-Up Sheet for Mobile Devices */
+                       /* Full Width & Fixed Close Button Overrides for Mobile */
                        @media (max-width: 991px) {
                            .modal-container {
                                position: fixed !important;
                                top: 0 !important;
                                left: 0 !important;
-                               width: 100vw !important;
-                               height: 100dvh !important; /* Uses dynamic viewport height to prevent browser bar overlap */
+                               right: 0 !important;
+                               width: 100% !important;
+                               max-width: 100vw !important;
+                               height: 100dvh !important;
                                max-height: 100dvh !important;
                                border-radius: 0 !important;
-                               overflow-y: auto !important; /* Allows the entire sheet to pull up natively */
-                               z-index: 999999 !important; /* Forces overlay on top of website header */
+                               margin: 0 !important;
+                               padding: 0 !important;
+                               overflow-y: auto !important;
+                               z-index: 999999 !important;
                                background: #FFFFFF !important;
                                -webkit-overflow-scrolling: touch;
                            }
@@ -489,7 +493,7 @@
                                position: sticky !important;
                                top: 0 !important;
                                width: 100% !important;
-                               height: 40vh !important; /* Pinned map view area */
+                               height: 40vh !important;
                                margin: 0 !important;
                                z-index: 1 !important;
                            }
@@ -502,15 +506,13 @@
                                position: relative !important;
                                width: 100% !important;
                                background: #FFFFFF !important;
-                               z-index: 2 !important; /* Slides over the sticky map when scrolling */
+                               z-index: 2 !important;
                                border-radius: 24px 24px 0 0 !important;
                                box-shadow: 0 -12px 30px rgba(0,0,0,0.15) !important;
                                padding: 35px 20px 60px 20px !important;
-                               margin-top: -25px !important; /* Smooth overlap curve over map base */
-                               overflow: visible !important;
-                               height: auto !important;
+                               margin-top: -25px !important;
+                               box-sizing: border-box !important;
                            }
-                           /* Interactive pull handle bar indicator */
                            .modal-left::before {
                                content: '';
                                position: absolute;
@@ -523,15 +525,15 @@
                                border-radius: 10px;
                            }
                            #closeModalBtn {
-                               position: fixed !important; /* Stays locked relative to screen window */
-                               top: 20px !important;
-                               right: 20px !important;
+                               position: fixed !important; /* Anchors the close icon permanently on screen */
+                               top: 16px !important;
+                               right: 16px !important;
                                width: 42px !important;
                                height: 42px !important;
                                font-size: 1.6rem !important;
-                               z-index: 9999999 !important;
+                               z-index: 99999999 !important;
                                background: rgba(255, 255, 255, 0.95) !important;
-                               box-shadow: 0 4px 12px rgba(0,0,0,0.2) !important;
+                               box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
                            }
                            .officer-item.active {
                                background-color: #FAF8F5 !important;
@@ -660,9 +662,56 @@
     refreshMapStyles();
     
     const targetScrollItem = highlightLoanOfficers(currentActiveRegion);
-    // Programmatic scrolling activated universally across both desktop layout views and mobile bottom-sheet views
-    if (targetScrollItem && activeState !== 'Arkansas') {
-        scrollContainer.scrollTo({ top: targetScrollItem.offsetTop - 40, behavior: 'smooth' });
+    
+    if (window.innerWidth < 992) {
+        // 1. Filter layout visibility: hide unselected officers
+        const officerItems = document.querySelectorAll('.officer-item');
+        officerItems.forEach(item => {
+            if (item.classList.contains('active')) {
+                item.style.display = 'block';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+        
+        // 2. Generate the inline reset "x" button next to "Loan Officers" heading
+        let clearBtn = document.getElementById('clearCountyFilter');
+        if (!clearBtn) {
+            // Locate heading elements inside mobile drawer container safely
+            const headerEl = [...document.querySelectorAll('.modal-left *')].find(el => el.textContent.trim().startsWith('Loan Officers'));
+            if (headerEl) {
+                headerEl.style.display = 'flex';
+                headerEl.style.justifyContent = 'space-between';
+                headerEl.style.alignItems = 'center';
+                headerEl.style.width = '100%';
+                
+                clearBtn = document.createElement('span');
+                clearBtn.id = 'clearCountyFilter';
+                clearBtn.innerHTML = '&times;';
+                clearBtn.style.cssText = 'cursor: pointer; font-size: 1.6rem; color: #999; font-weight: bold; padding: 0 5px;';
+                
+                clearBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    currentActiveRegion = null;
+                    refreshMapStyles();
+                    
+                    // Show all list cards and clear out selection outline frames
+                    officerItems.forEach(item => {
+                        item.style.display = 'block';
+                        item.classList.remove('active');
+                        item.style.backgroundColor = '';
+                        item.style.border = '';
+                    });
+                    clearBtn.remove();
+                });
+                headerEl.appendChild(clearBtn);
+            }
+        }
+    } else {
+        // Keep smooth programmatic scrolling behavior on desktop screens
+        if (targetScrollItem && activeState !== 'Arkansas') {
+            scrollContainer.scrollTo({ top: targetScrollItem.offsetTop - 40, behavior: 'smooth' });
+        }
     }
 });
                        }
