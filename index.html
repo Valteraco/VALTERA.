@@ -463,7 +463,7 @@
                const modalContainer = document.querySelector('.modal-container');
                modalContainer.innerHTML = `
                    <style>
-                       /* Full Width & Fixed Close Button Overrides for Mobile */
+                       /* Full Width, Fixed Control Overlay, and Responsive Sheet Properties */
                        @media (max-width: 991px) {
                            .modal-container {
                                position: fixed !important;
@@ -493,9 +493,10 @@
                                position: sticky !important;
                                top: 0 !important;
                                width: 100% !important;
-                               height: 40vh !important;
+                               height: 40vh !important; /* Pinned baseline map height */
                                margin: 0 !important;
                                z-index: 1 !important;
+                               transition: height 0.05s ease-out;
                            }
                            #utah-map {
                                min-height: 0 !important;
@@ -512,6 +513,7 @@
                                padding: 35px 20px 60px 20px !important;
                                margin-top: -25px !important;
                                box-sizing: border-box !important;
+                               height: auto !important;
                            }
                            .modal-left::before {
                                content: '';
@@ -525,7 +527,7 @@
                                border-radius: 10px;
                            }
                            #closeModalBtn {
-                               position: fixed !important; /* Anchors the close icon permanently on screen */
+                               position: fixed !important; /* Forces the primary exit action button to remain frozen on screen */
                                top: 16px !important;
                                right: 16px !important;
                                width: 42px !important;
@@ -553,6 +555,50 @@
 
                const modalOverlay = document.getElementById('officerModal');
                modalOverlay.classList.add('active');
+
+               /* Google Maps Gesture Tracking: Dynamic map expansion when drawer sheet content is pulled down */
+               setTimeout(() => {
+                   const mLeft = document.querySelector('.modal-left');
+                   const mRight = document.querySelector('.modal-right');
+                   const mContainer = document.querySelector('.modal-container');
+                   if (!mLeft || !mRight || !mContainer || window.innerWidth >= 992) return;
+
+                   let startY = 0;
+                   let startH = 0;
+                   let dragging = false;
+
+                   mLeft.addEventListener('touchstart', function(e) {
+                       if (mContainer.scrollTop <= 5) {
+                           startY = e.touches[0].clientY;
+                           startH = mRight.offsetHeight;
+                           dragging = true;
+                       }
+                   }, { passive: true });
+
+                   document.addEventListener('touchmove', function(e) {
+                       if (!dragging) return;
+                       const currentY = e.touches[0].clientY;
+                       const diff = currentY - startY;
+
+                       let newH = startH + diff;
+                       const maxH = window.innerHeight * 0.70; /* Pushes drawer down but never off-screen */
+                       const minH = window.innerHeight * 0.35; /* Baseline minimum constraint size */
+
+                       if (newH > maxH) newH = maxH;
+                       if (newH < minH) newH = minH;
+
+                       if (diff > 0 || mRight.offsetHeight > minH) {
+                           mRight.style.setProperty('height', newH + 'px', 'important');
+                           if (typeof leafletMap !== 'undefined' && leafletMap) {
+                               leafletMap.invalidateSize();
+                           }
+                       }
+                   }, { passive: true });
+
+                   document.addEventListener('touchend', function() {
+                       dragging = false;
+                   });
+               }, 300);
 
                // The window.innerWidth >= 992 condition has been removed to allow mobile rendering
                const officerItems = document.querySelectorAll('.officer-item');
@@ -664,20 +710,21 @@
     const targetScrollItem = highlightLoanOfficers(currentActiveRegion);
     
     if (window.innerWidth < 992) {
-        // 1. Filter layout visibility: hide unselected officers
-        const officerItems = document.querySelectorAll('.officer-item');
-        officerItems.forEach(item => {
-            if (item.classList.contains('active')) {
-                item.style.display = 'block';
-            } else {
-                item.style.display = 'none';
-            }
-        });
+        /* Filter visibility: Hide all non-applicable loan officer layout blocks entirely */
+        setTimeout(() => {
+            const officerItems = document.querySelectorAll('.officer-item');
+            officerItems.forEach(item => {
+                if (item.classList.contains('active') || item.querySelector('.active')) {
+                    item.style.setProperty('display', 'block', 'important');
+                } else {
+                    item.style.setProperty('display', 'none', 'important');
+                }
+            });
+        }, 30);
         
-        // 2. Generate the inline reset "x" button next to "Loan Officers" heading
+        // Generate the inline reset "x" button next to "Loan Officers" heading
         let clearBtn = document.getElementById('clearCountyFilter');
         if (!clearBtn) {
-            // Locate heading elements inside mobile drawer container safely
             const headerEl = [...document.querySelectorAll('.modal-left *')].find(el => el.textContent.trim().startsWith('Loan Officers'));
             if (headerEl) {
                 headerEl.style.display = 'flex';
@@ -695,12 +742,15 @@
                     currentActiveRegion = null;
                     refreshMapStyles();
                     
-                    // Show all list cards and clear out selection outline frames
+                    /* Reset Action: Reveal all loan officers cleanly when inline close button is selected */
+                    const officerItems = document.querySelectorAll('.officer-item');
                     officerItems.forEach(item => {
-                        item.style.display = 'block';
+                        item.style.setProperty('display', 'block', 'important');
                         item.classList.remove('active');
                         item.style.backgroundColor = '';
                         item.style.border = '';
+                        const innerActive = item.querySelector('.active');
+                        if (innerActive) innerActive.classList.remove('active');
                     });
                     clearBtn.remove();
                 });
@@ -708,7 +758,6 @@
             }
         }
     } else {
-        // Keep smooth programmatic scrolling behavior on desktop screens
         if (targetScrollItem && activeState !== 'Arkansas') {
             scrollContainer.scrollTo({ top: targetScrollItem.offsetTop - 40, behavior: 'smooth' });
         }
