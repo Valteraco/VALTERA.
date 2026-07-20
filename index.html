@@ -556,22 +556,24 @@
                const modalOverlay = document.getElementById('officerModal');
                modalOverlay.classList.add('active');
 
-               /* Google Maps Gesture Tracking: Dynamic map expansion when drawer sheet content is pulled down */
+               /* Google Maps Gesture Tracking & Mobile Behaviors */
                setTimeout(() => {
                    const mLeft = document.querySelector('.modal-left');
                    const mRight = document.querySelector('.modal-right');
                    const mContainer = document.querySelector('.modal-container');
                    if (!mLeft || !mRight || !mContainer || window.innerWidth >= 992) return;
 
+                   // 1. Gesture Tracking & Auto-Snapping
                    let startY = 0;
                    let startH = 0;
                    let dragging = false;
 
                    mLeft.addEventListener('touchstart', function(e) {
-                       if (mContainer.scrollTop <= 5) {
+                       if (mLeft.scrollTop <= 5) {
                            startY = e.touches[0].clientY;
                            startH = mRight.offsetHeight;
                            dragging = true;
+                           mRight.style.transition = 'none';
                        }
                    }, { passive: true });
 
@@ -581,22 +583,102 @@
                        const diff = currentY - startY;
 
                        let newH = startH + diff;
-                       const maxH = window.innerHeight * 0.70; /* Pushes drawer down but never off-screen */
-                       const minH = window.innerHeight * 0.35; /* Baseline minimum constraint size */
+                       const maxH = window.innerHeight * 0.75; 
+                       const minH = window.innerHeight * 0.35; 
 
                        if (newH > maxH) newH = maxH;
                        if (newH < minH) newH = minH;
 
                        if (diff > 0 || mRight.offsetHeight > minH) {
                            mRight.style.setProperty('height', newH + 'px', 'important');
-                           if (typeof leafletMap !== 'undefined' && leafletMap) {
-                               leafletMap.invalidateSize();
-                           }
                        }
                    }, { passive: true });
 
                    document.addEventListener('touchend', function() {
+                       if (!dragging) return;
                        dragging = false;
+                       
+                       // Smooth Auto-Scroll (Snap)
+                       mRight.style.transition = 'height 0.3s ease-out';
+                       const currentH = mRight.offsetHeight;
+                       const midPoint = window.innerHeight * 0.55;
+                       
+                       if (currentH > midPoint) {
+                           mRight.style.setProperty('height', '75vh', 'important'); // Pull down: snap map to fill space
+                       } else {
+                           mRight.style.setProperty('height', '40vh', 'important'); // Push up: snap back to standard
+                       }
+                       
+                       // Refit state map to perfectly fill the new container space with padding
+                       setTimeout(() => {
+                           if (typeof leafletMap !== 'undefined' && leafletMap && typeof geojsonLayer !== 'undefined') {
+                               leafletMap.invalidateSize();
+                               leafletMap.fitBounds(geojsonLayer.getBounds(), { padding: [45, 45] });
+                           }
+                       }, 320);
+                   });
+                   
+                   // 2. Mobile Officer Click Filtering
+                   const officerItems = document.querySelectorAll('.officer-item');
+                   officerItems.forEach(item => {
+                       item.addEventListener('click', function() {
+                           const region = this.getAttribute('data-region');
+                           if (region) {
+                               currentActiveRegion = region;
+                               refreshMapStyles();
+                               highlightLoanOfficers(currentActiveRegion);
+                               
+                               setTimeout(() => {
+                                   officerItems.forEach(opt => {
+                                       if (opt.classList.contains('active') || opt.querySelector('.active')) {
+                                           opt.style.setProperty('display', 'block', 'important');
+                                       } else {
+                                           opt.style.setProperty('display', 'none', 'important');
+                                       }
+                                   });
+                                   
+                                   // Pin Linda Lopez to the bottom of the list when filtering
+                                   const linda = Array.from(officerItems).find(el => el.textContent.includes('Linda Lopez'));
+                                   if (linda && linda.parentNode) {
+                                       linda.parentNode.appendChild(linda);
+                                   }
+                                   
+                                   // Show clear "x" inline button
+                                   let clearBtn = document.getElementById('clearCountyFilter');
+                                   if (!clearBtn) {
+                                       const headerEl = [...document.querySelectorAll('.modal-left *')].find(el => el.textContent.trim().startsWith('Loan Officers'));
+                                       if (headerEl) {
+                                           headerEl.style.display = 'flex';
+                                           headerEl.style.justifyContent = 'space-between';
+                                           headerEl.style.alignItems = 'center';
+                                           headerEl.style.width = '100%';
+                                           
+                                           clearBtn = document.createElement('span');
+                                           clearBtn.id = 'clearCountyFilter';
+                                           clearBtn.innerHTML = '&times;';
+                                           clearBtn.style.cssText = 'cursor: pointer; font-size: 1.6rem; color: #999; font-weight: bold; padding: 0 5px;';
+                                           
+                                           clearBtn.addEventListener('click', function(e) {
+                                               e.stopPropagation();
+                                               currentActiveRegion = null;
+                                               refreshMapStyles();
+                                               
+                                               officerItems.forEach(opt => {
+                                                   opt.style.setProperty('display', 'block', 'important');
+                                                   opt.classList.remove('active');
+                                                   opt.style.backgroundColor = '';
+                                                   opt.style.border = '';
+                                                   const innerActive = opt.querySelector('.active');
+                                                   if (innerActive) innerActive.classList.remove('active');
+                                               });
+                                               clearBtn.remove();
+                                           });
+                                           headerEl.appendChild(clearBtn);
+                                       }
+                                   }
+                               }, 30);
+                           }
+                       });
                    });
                }, 300);
 
@@ -720,6 +802,12 @@
                     item.style.setProperty('display', 'none', 'important');
                 }
             });
+            
+            // Pin Linda Lopez to the bottom of the list when a map county is selected
+            const linda = Array.from(officerItems).find(el => el.textContent.includes('Linda Lopez'));
+            if (linda && linda.parentNode) {
+                linda.parentNode.appendChild(linda);
+            }
         }, 30);
         
         // Generate the inline reset "x" button next to "Loan Officers" heading
