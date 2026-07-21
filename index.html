@@ -457,159 +457,468 @@
                `;
 
                const rightHtml = `
-                   <button id="closeModalBtn" style="position: absolute; top: 30px; right: 40px; z-index: 9999; font-size: 2rem; background: #FFFFFF; width: 50px; height: 50px; border-radius: 50%; box-shadow: 0 4px 15px rgba(0,0,0,0.15); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #1A1A1A;">&times;</button>
-                   <div id="utah-map"></div>
+                   <div id="utah-map" style="width: 100%; height: 100%; min-height: 400px; z-index: 1;"></div>
                `;
 
                const modalContainer = document.querySelector('.modal-container');
+               
+               /* Lock background body scroll to stop scroll bleed behind the modal */
+               document.body.style.setProperty('overflow', 'hidden', 'important'); 
+
                modalContainer.innerHTML = `
+                   <style>
+                       @media (max-width: 991px) {
+                           .modal-container {
+                               position: fixed !important;
+                               top: 0 !important;
+                               left: 0 !important;
+                               right: 0 !important;
+                               width: 100% !important;
+                               max-width: 100vw !important;
+                               height: 100dvh !important;
+                               max-height: 100dvh !important;
+                               border-radius: 0 !important;
+                               margin: 0 !important;
+                               padding: 0 !important;
+                               overflow-y: auto !important;
+                               overscroll-behavior: none !important; /* Stop background stretching */
+                               z-index: 999999 !important;
+                               background: #FFFFFF !important;
+                               -webkit-overflow-scrolling: touch;
+                           }
+                           .modal-split-layout {
+                               display: flex !important;
+                               flex-direction: column !important;
+                               min-height: 100% !important;
+                               width: 100% !important;
+                           }
+                           .modal-right {
+                               display: block !important;
+                               position: sticky !important;
+                               top: 0 !important;
+                               width: 100% !important;
+                               height: 45vh !important; /* Fixed initial height to completely prevent "pile of words" */
+                               margin: 0 !important;
+                               z-index: 1 !important;
+                               transition: height 0.4s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+                           }
+                           #utah-map {
+                               min-height: 0 !important;
+                               height: 100% !important;
+                               border-radius: 0 !important;
+                           }
+                           .modal-left {
+                               position: relative !important;
+                               width: 100% !important;
+                               background: #FFFFFF !important;
+                               z-index: 2 !important;
+                               border-radius: 24px 24px 0 0 !important;
+                               box-shadow: 0 -12px 30px rgba(0,0,0,0.15) !important;
+                               padding: 35px 20px 60px 20px !important;
+                               margin-top: -25px !important;
+                               box-sizing: border-box !important;
+                               height: auto !important;
+                               min-height: 60vh !important;
+                           }
+                           .modal-left::before {
+                               content: '';
+                               position: absolute;
+                               top: 12px;
+                               left: 50%;
+                               transform: translateX(-50%);
+                               width: 45px;
+                               height: 5px;
+                               background: #D1D1D1;
+                               border-radius: 10px;
+                           }
+                           .drag-handle-zone {
+                               position: absolute;
+                               top: 0; left: 0; right: 0;
+                               height: 50px;
+                               z-index: 10;
+                           }
+                           #closeModalBtn {
+                               position: fixed !important;
+                               top: 16px !important;
+                               right: 16px !important;
+                               width: 42px !important;
+                               height: 42px !important;
+                               font-size: 1.6rem !important;
+                               z-index: 99999999 !important;
+                               background: rgba(255, 255, 255, 0.95) !important;
+                               box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+                           }
+                       }
+                   </style>
+                   <button id="closeModalBtn" style="position: absolute; top: 30px; right: 40px; z-index: 9999; font-size: 2rem; background: #FFFFFF; width: 50px; height: 50px; border-radius: 50%; box-shadow: 0 4px 15px rgba(0,0,0,0.15); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #1A1A1A;">&times;</button>
                    <div class="modal-split-layout">
-                       <div class="modal-left" id="modalLeftScroll">${leftHtml}</div>
                        <div class="modal-right">${rightHtml}</div>
+                       <div class="modal-left" id="modalLeftScroll">
+                           <div class="drag-handle-zone"></div>
+                           ${leftHtml}
+                       </div>
                    </div>
                `;
 
                const modalOverlay = document.getElementById('officerModal');
                modalOverlay.classList.add('active');
+               
+               document.getElementById('closeModalBtn').addEventListener('click', () => {
+                   document.body.style.removeProperty('overflow');
+               });
 
-               if (window.innerWidth >= 992) {
+               /* Google Maps Gesture Tracking & Mobile Behaviors */
+               setTimeout(() => {
+                   const mLeft = document.querySelector('.modal-left');
+                   const mRight = document.querySelector('.modal-right');
+                   const mContainer = document.querySelector('.modal-container');
+                   if (!mLeft || !mRight || !mContainer || window.innerWidth >= 992) return;
+
                    const officerItems = document.querySelectorAll('.officer-item');
-                   const scrollContainer = document.getElementById('modalLeftScroll');
-
-                   if (leafletMap) {
-                       leafletMap.remove();
+                   if (officerItems.length > 0 && !window.originalOfficers) {
+                       window.officerParent = officerItems[0].parentNode;
+                       window.originalOfficers = Array.from(officerItems);
                    }
 
-                   const mapCenter = activeState === 'Arkansas' ? [34.8, -92.2] : [39.32, -111.09];
-                   
-                   leafletMap = L.map('utah-map', {
-                       zoomControl: false, dragging: false, doubleClickZoom: false,
-                       scrollWheelZoom: false, touchZoom: false, attributionControl: false,
-                       zoomSnap: 0 
-                   }).setView(mapCenter, 6);
+                   // 1. Gesture Tracking (Pull down expands map, stays large, native scroll handles moving list up)
+                   let startY = 0;
+                   let isHandle = false;
 
-                   function highlightLoanOfficers(regionId) {
-                       officerItems.forEach(i => i.classList.remove('active'));
-                       
-                       if (activeState === 'Arkansas') {
-                           officerItems.forEach(i => i.classList.add('active'));
-                           return officerItems[0];
+                   mLeft.addEventListener('touchstart', function(e) {
+                       const touchY = e.touches[0].clientY;
+                       const rect = mLeft.getBoundingClientRect();
+                       isHandle = (touchY - rect.top) < 60;
+
+                       if (isHandle && mContainer.scrollTop <= 5) {
+                           startY = touchY;
                        }
+                   }, { passive: true });
 
-                       if (!regionId || regionId === "unmapped") return null;
+                   mLeft.addEventListener('touchmove', function(e) {
+                       if (!startY) return;
+                       const diff = e.touches[0].clientY - startY;
 
-                       const primaryItem = document.querySelector(`.officer-item[data-region="${regionId}"]`);
-                       const statewideItem = document.querySelector(`.officer-item[data-region="statewide"]`);
-
-                       if (primaryItem) primaryItem.classList.add('active');
-                       if (statewideItem && regionId !== "statewide") statewideItem.classList.add('active');
-
-                       return primaryItem || statewideItem;
-                   }
-
-                   function refreshMapStyles() {
-                       if (!geojsonLayer) return;
-
-                       const mapRegionToShow = hoveredRegionId !== null ? hoveredRegionId : currentActiveRegion;
-
-                       geojsonLayer.eachLayer(layer => {
-                           const countyInfo = countyDataMap[layer.feature.id] || { name: "" };
-                           
-                           const isHighlighted = activeState === 'Arkansas' ? 
-                               (mapRegionToShow !== null) : 
-                               (mapRegionToShow === "statewide" || (layer.options.regionId === mapRegionToShow && mapRegionToShow !== "unmapped"));
-                           
-                           if (isHighlighted) {
-                               layer.setStyle({
-                                   fillColor: '#1E3F33', 
-                                   color: '#FFFFFF',
-                                   weight: 2
-                               });
-                               layer.bringToFront();
-                               if(layer.getTooltip() && layer.getTooltip().getElement()) {
-                                   layer.getTooltip().getElement().classList.add('active-label');
+                       // If pulled down, permanently expand map to 75vh and stop tracking
+                       if (diff > 25) {
+                           mRight.style.setProperty('height', '75vh', 'important');
+                           setTimeout(() => {
+                               if (typeof leafletMap !== 'undefined' && leafletMap && typeof geojsonLayer !== 'undefined') {
+                                   leafletMap.invalidateSize();
+                                   try { leafletMap.fitBounds(geojsonLayer.getBounds(), { padding: [45, 45] }); } catch(e){}
                                }
-                           } else {
-                               layer.setStyle({
-                                   fillColor: '#EAEAEA',
-                                   color: '#FFFFFF',
-                                   weight: 1.5
-                               });
-                               if(layer.getTooltip() && layer.getTooltip().getElement()) {
-                                   layer.getTooltip().getElement().classList.remove('active-label');
-                               }
-                           }
-                       });
-                   }
+                           }, 320);
+                           startY = 0; 
+                       }
+                   }, { passive: true });
 
-                   if (allCountiesData) {
-                       const stateCountiesData = allCountiesData.filter(feature => feature.id.startsWith(targetFipsPrefix));
-
-                       geojsonLayer = L.geoJSON(stateCountiesData, {
-                           style: function() { return { fillColor: '#EAEAEA', weight: 1.5, color: '#FFFFFF', fillOpacity: 1 }; },
-                           onEachFeature: function(feature, layer) {
-                               const mappedData = countyDataMap[feature.id] || { region: "unmapped" };
-                               const countyName = feature.properties ? feature.properties.NAME : "County";
-                               layer.options.regionId = mappedData.region;
-
-                               if (countyName) {
-                                   layer.bindTooltip(countyName, {
-                                       permanent: true, direction: "center", className: "county-label"
-                                   });
-                               }
-
-                               layer.on('mouseover', function() {
-                                   const mapRegionToShow = hoveredRegionId !== null ? hoveredRegionId : currentActiveRegion;
-                                   const isHighlighted = activeState === 'Arkansas' ? 
-                                       (mapRegionToShow !== null) : 
-                                       (mapRegionToShow === "statewide" || (layer.options.regionId === mapRegionToShow && mapRegionToShow !== "unmapped"));
-                                   
-                                   if (!isHighlighted) { layer.setStyle({ fillColor: '#D1D1D1', color: '#FFFFFF' }); }
-                               });
-                               layer.on('mouseout', function() {
-                                   const mapRegionToShow = hoveredRegionId !== null ? hoveredRegionId : currentActiveRegion;
-                                   const isHighlighted = activeState === 'Arkansas' ? 
-                                       (mapRegionToShow !== null) : 
-                                       (mapRegionToShow === "statewide" || (layer.options.regionId === mapRegionToShow && mapRegionToShow !== "unmapped"));
-                                   
-                                   if (!isHighlighted) { layer.setStyle({ fillColor: '#EAEAEA', color: '#FFFFFF' }); }
-                               });
-                               
-                               layer.on('click', function() {
-                                   currentActiveRegion = layer.options.regionId;
-                                   refreshMapStyles();
-                                   
-                                   const targetScrollItem = highlightLoanOfficers(currentActiveRegion);
-                                   if (targetScrollItem && activeState !== 'Arkansas') {
-                                       scrollContainer.scrollTo({ top: targetScrollItem.offsetTop - 40, behavior: 'smooth' });
-                                   }
-                               });
-                           }
-                       }).addTo(leafletMap);
-
-                       setTimeout(() => {
-                           leafletMap.invalidateSize();
-                           // Increased padding from [10, 10] to [45, 45] to introduce a clean gap around the state boundaries
-                           leafletMap.fitBounds(geojsonLayer.getBounds(), { padding: [45, 45] }); 
-                       }, 100);
-                   }
-
+                   mLeft.addEventListener('touchend', function() {
+                       startY = 0;
+                   });
+                   
+                   // 2. Mobile Officer Click Filtering
                    officerItems.forEach(item => {
-                       item.addEventListener('mouseenter', function() {
-                           hoveredRegionId = this.getAttribute('data-region');
-                           refreshMapStyles();
-                       });
-                       item.addEventListener('mouseleave', function() {
-                           hoveredRegionId = null;
-                           refreshMapStyles();
-                       });
                        item.addEventListener('click', function() {
-                           currentActiveRegion = this.getAttribute('data-region');
-                           highlightLoanOfficers(currentActiveRegion);
-                           refreshMapStyles();
+                           const region = this.getAttribute('data-region');
+                           if (region) {
+                               currentActiveRegion = region;
+                               refreshMapStyles();
+                               highlightLoanOfficers(currentActiveRegion);
+
+                               setTimeout(() => {
+                                   officerItems.forEach(opt => {
+                                       // Reset previous inline styles
+                                       opt.style.removeProperty('background-color');
+                                       opt.style.removeProperty('border');
+                                       opt.style.removeProperty('border-radius');
+                                       opt.style.removeProperty('padding');
+                                       opt.style.removeProperty('margin-bottom');
+
+                                       const isLinda = opt.textContent.includes('Linda Lopez');
+                                       const isMatch = opt.getAttribute('data-region') === region || isLinda;
+                                       
+                                       if (isMatch) {
+                                           opt.style.removeProperty('display');
+                                           opt.style.setProperty('margin-bottom', '2rem', 'important');
+                                           
+                                           // Apply Ivory & Gold styles only to explicitly clicked officer
+                                           if (opt === item) {
+                                               opt.style.setProperty('background-color', '#FAF8F5', 'important');
+                                               opt.style.setProperty('border', '1px solid #DFBA73', 'important');
+                                               opt.style.setProperty('border-radius', '14px', 'important');
+                                               opt.style.setProperty('padding', '18px', 'important');
+                                           }
+                                       } else {
+                                           opt.style.setProperty('display', 'none', 'important');
+                                       }
+                                   });
+                                   
+                                   // Pin Linda Lopez directly under the selected officer
+                                   const linda = Array.from(officerItems).find(el => el.textContent.includes('Linda Lopez'));
+                                   if (linda && window.officerParent) {
+                                       window.officerParent.appendChild(linda);
+                                   }
+
+                                   let clearBtn = document.getElementById('clearCountyFilter');
+                                   if (!clearBtn) {
+                                       const headerEl = [...document.querySelectorAll('.modal-left *')].find(el => el.textContent.trim().startsWith('Loan Officers'));
+                                       if (headerEl) {
+                                           headerEl.style.display = 'flex';
+                                           headerEl.style.justifyContent = 'space-between';
+                                           headerEl.style.alignItems = 'center';
+                                           headerEl.style.width = '100%';
+                                           
+                                           clearBtn = document.createElement('span');
+                                           clearBtn.id = 'clearCountyFilter';
+                                           clearBtn.innerHTML = '&times;';
+                                           clearBtn.style.cssText = 'cursor: pointer; font-size: 1.6rem; color: #999; font-weight: bold; padding: 0 5px;';
+                                           
+                                           clearBtn.addEventListener('click', function(e) {
+                                               e.stopPropagation();
+                                               currentActiveRegion = null;
+                                               refreshMapStyles();
+                                               
+                                               if (window.originalOfficers && window.officerParent) {
+                                                   window.originalOfficers.forEach(opt => {
+                                                       window.officerParent.appendChild(opt);
+                                                   });
+                                               }
+
+                                               officerItems.forEach(opt => {
+                                                   opt.style.removeProperty('display');
+                                                   opt.style.removeProperty('background-color');
+                                                   opt.style.removeProperty('border');
+                                                   opt.style.removeProperty('border-radius');
+                                                   opt.style.removeProperty('padding');
+                                                   opt.style.removeProperty('margin-bottom');
+                                               });
+                                               clearBtn.remove();
+                                           });
+                                           headerEl.appendChild(clearBtn);
+                                       }
+                                   }
+                               }, 30);
+                           }
                        });
                    });
+               }, 300);
+
+               // The window.innerWidth >= 992 condition has been removed to allow mobile rendering
+               const officerItems = document.querySelectorAll('.officer-item');
+               const scrollContainer = document.getElementById('modalLeftScroll');
+
+               if (leafletMap) {
+                   leafletMap.remove();
                }
+
+               const mapCenter = activeState === 'Arkansas' ? [34.8, -92.2] : [39.32, -111.09];
+               
+               leafletMap = L.map('utah-map', {
+                   zoomControl: false, dragging: false, doubleClickZoom: false,
+                   scrollWheelZoom: false, touchZoom: false, attributionControl: false,
+                   zoomSnap: 0 
+               }).setView(mapCenter, 6);
+
+               function highlightLoanOfficers(regionId) {
+                   officerItems.forEach(i => i.classList.remove('active'));
+                   
+                   if (activeState === 'Arkansas') {
+                       officerItems.forEach(i => i.classList.add('active'));
+                       return officerItems[0];
+                   }
+
+                   if (!regionId || regionId === "unmapped") return null;
+
+                   const primaryItem = document.querySelector(`.officer-item[data-region="${regionId}"]`);
+                   const statewideItem = document.querySelector(`.officer-item[data-region="statewide"]`);
+
+                   if (primaryItem) primaryItem.classList.add('active');
+                   if (statewideItem && regionId !== "statewide") statewideItem.classList.add('active');
+
+                   return primaryItem || statewideItem;
+               }
+
+               function refreshMapStyles() {
+                   if (!geojsonLayer) return;
+
+                   const mapRegionToShow = hoveredRegionId !== null ? hoveredRegionId : currentActiveRegion;
+
+                   geojsonLayer.eachLayer(layer => {
+                       const countyInfo = countyDataMap[layer.feature.id] || { name: "" };
+                       
+                       const isHighlighted = activeState === 'Arkansas' ? 
+                           (mapRegionToShow !== null) : 
+                           (mapRegionToShow === "statewide" || (layer.options.regionId === mapRegionToShow && mapRegionToShow !== "unmapped"));
+                       
+                       if (isHighlighted) {
+                           layer.setStyle({
+                               fillColor: '#1E3F33', 
+                               color: '#FFFFFF',
+                               weight: 2
+                           });
+                           layer.bringToFront();
+                           if(layer.getTooltip() && layer.getTooltip().getElement()) {
+                               layer.getTooltip().getElement().classList.add('active-label');
+                           }
+                       } else {
+                           layer.setStyle({
+                               fillColor: '#EAEAEA',
+                               color: '#FFFFFF',
+                               weight: 1.5
+                           });
+                           if(layer.getTooltip() && layer.getTooltip().getElement()) {
+                               layer.getTooltip().getElement().classList.remove('active-label');
+                           }
+                       }
+                   });
+               }
+
+               if (allCountiesData) {
+                   const stateCountiesData = allCountiesData.filter(feature => feature.id.startsWith(targetFipsPrefix));
+
+                   geojsonLayer = L.geoJSON(stateCountiesData, {
+                       style: function() { return { fillColor: '#EAEAEA', weight: 1.5, color: '#FFFFFF', fillOpacity: 1 }; },
+                       onEachFeature: function(feature, layer) {
+                           const mappedData = countyDataMap[feature.id] || { region: "unmapped" };
+                           const countyName = feature.properties ? feature.properties.NAME : "County";
+                           layer.options.regionId = mappedData.region;
+
+                           if (countyName) {
+                               layer.bindTooltip(countyName, {
+                                   permanent: true, direction: "center", className: "county-label"
+                               });
+                           }
+
+                           layer.on('mouseover', function() {
+                               const mapRegionToShow = hoveredRegionId !== null ? hoveredRegionId : currentActiveRegion;
+                               const isHighlighted = activeState === 'Arkansas' ? 
+                                   (mapRegionToShow !== null) : 
+                                   (mapRegionToShow === "statewide" || (layer.options.regionId === mapRegionToShow && mapRegionToShow !== "unmapped"));
+                               
+                               if (!isHighlighted) { layer.setStyle({ fillColor: '#D1D1D1', color: '#FFFFFF' }); }
+                           });
+                           layer.on('mouseout', function() {
+                               const mapRegionToShow = hoveredRegionId !== null ? hoveredRegionId : currentActiveRegion;
+                               const isHighlighted = activeState === 'Arkansas' ? 
+                                   (mapRegionToShow !== null) : 
+                                   (mapRegionToShow === "statewide" || (layer.options.regionId === mapRegionToShow && mapRegionToShow !== "unmapped"));
+                               
+                               if (!isHighlighted) { layer.setStyle({ fillColor: '#EAEAEA', color: '#FFFFFF' }); }
+                           });
+                           
+                           layer.on('click', function() {
+    currentActiveRegion = layer.options.regionId;
+    refreshMapStyles();
+    
+    const targetScrollItem = highlightLoanOfficers(currentActiveRegion);
+    
+    if (window.innerWidth < 992) {
+        setTimeout(() => {
+            const officerItems = document.querySelectorAll('.officer-item');
+            
+            officerItems.forEach(item => {
+                // Reset previous inline styles
+                item.style.removeProperty('background-color');
+                item.style.removeProperty('border');
+                item.style.removeProperty('border-radius');
+                item.style.removeProperty('padding');
+                item.style.removeProperty('margin-bottom');
+
+                const isLinda = item.textContent.includes('Linda Lopez');
+                const isExplicitMatch = item.getAttribute('data-region') === currentActiveRegion;
+                const isMatch = isExplicitMatch || isLinda;
+                
+                if (isMatch) {
+                    item.style.removeProperty('display');
+                    item.style.setProperty('margin-bottom', '2rem', 'important');
+                    
+                    // Apply Ivory & Gold styles strictly to the explicitly matched region
+                    if (isExplicitMatch) {
+                        item.style.setProperty('background-color', '#FAF8F5', 'important');
+                        item.style.setProperty('border', '1px solid #DFBA73', 'important');
+                        item.style.setProperty('border-radius', '14px', 'important');
+                        item.style.setProperty('padding', '18px', 'important');
+                    }
+                } else {
+                    item.style.setProperty('display', 'none', 'important');
+                }
+            });
+            
+            // Pin Linda Lopez directly under the selected officer
+            const linda = Array.from(officerItems).find(el => el.textContent.includes('Linda Lopez'));
+            if (linda && window.officerParent) {
+                window.officerParent.appendChild(linda);
+            }
+        }, 30);
+        
+        let clearBtn = document.getElementById('clearCountyFilter');
+        if (!clearBtn) {
+            const headerEl = [...document.querySelectorAll('.modal-left *')].find(el => el.textContent.trim().startsWith('Loan Officers'));
+            if (headerEl) {
+                headerEl.style.display = 'flex';
+                headerEl.style.justifyContent = 'space-between';
+                headerEl.style.alignItems = 'center';
+                headerEl.style.width = '100%';
+                
+                clearBtn = document.createElement('span');
+                clearBtn.id = 'clearCountyFilter';
+                clearBtn.innerHTML = '&times;';
+                clearBtn.style.cssText = 'cursor: pointer; font-size: 1.6rem; color: #999; font-weight: bold; padding: 0 5px;';
+                
+                clearBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    currentActiveRegion = null;
+                    refreshMapStyles();
+                    
+                    if (window.originalOfficers && window.officerParent) {
+                        window.originalOfficers.forEach(opt => {
+                            window.officerParent.appendChild(opt);
+                        });
+                    }
+
+                    const officerItems = document.querySelectorAll('.officer-item');
+                    officerItems.forEach(item => {
+                        item.style.removeProperty('display');
+                        item.style.removeProperty('background-color');
+                        item.style.removeProperty('border');
+                        item.style.removeProperty('border-radius');
+                        item.style.removeProperty('padding');
+                        item.style.removeProperty('margin-bottom');
+                    });
+                    clearBtn.remove();
+                });
+                headerEl.appendChild(clearBtn);
+            }
+        }
+    } else {
+        if (targetScrollItem && typeof activeState !== 'undefined' && activeState !== 'Arkansas') {
+            scrollContainer.scrollTo({ top: targetScrollItem.offsetTop - 40, behavior: 'smooth' });
+        }
+    }
+});
+                       }
+                   }).addTo(leafletMap);
+
+                   setTimeout(() => {
+                       leafletMap.invalidateSize();
+                       leafletMap.fitBounds(geojsonLayer.getBounds(), { padding: [45, 45] }); 
+                   }, 100);
+               }
+
+               officerItems.forEach(item => {
+                   item.addEventListener('mouseenter', function() {
+                       hoveredRegionId = this.getAttribute('data-region');
+                       refreshMapStyles();
+                   });
+                   item.addEventListener('mouseleave', function() {
+                       hoveredRegionId = null;
+                       refreshMapStyles();
+                   });
+                   item.addEventListener('click', function() {
+                       currentActiveRegion = this.getAttribute('data-region');
+                       highlightLoanOfficers(currentActiveRegion);
+                       refreshMapStyles();
+                   });
+               });
 
                document.getElementById('closeModalBtn').addEventListener('click', function() {
                    modalOverlay.classList.remove('active');
