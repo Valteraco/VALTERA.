@@ -811,95 +811,116 @@
                            });
                            
                            layer.on('click', function() {
-    currentActiveRegion = layer.options.regionId;
-    refreshMapStyles();
-    
-    const targetScrollItem = highlightLoanOfficers(currentActiveRegion);
-    
-    if (window.innerWidth < 992) {
-        setTimeout(() => {
-            const officerItems = document.querySelectorAll('.officer-item');
-            
-            officerItems.forEach(item => {
-                // Reset previous inline styles
-                item.style.removeProperty('background-color');
-                item.style.removeProperty('border');
-                item.style.removeProperty('border-radius');
-                item.style.removeProperty('padding');
-                item.style.removeProperty('margin-bottom');
+                               currentActiveRegion = layer.options.regionId;
+                               refreshMapStyles();
+                               
+                               const targetScrollItem = highlightLoanOfficers(currentActiveRegion);
+                               
+                               if (window.innerWidth < 992) {
+                                   // 1. Shrink the map back to the smaller size (45vh)
+                                   const mRight = document.querySelector('.modal-right');
+                                   if (mRight) {
+                                       mRight.style.transition = 'height 0.4s cubic-bezier(0.25, 0.8, 0.25, 1) !important';
+                                       mRight.style.setProperty('height', '45vh', 'important');
+                                       
+                                       // Recenter the map after it shrinks
+                                       setTimeout(() => {
+                                           if (typeof leafletMap !== 'undefined' && leafletMap && typeof geojsonLayer !== 'undefined') {
+                                               leafletMap.invalidateSize();
+                                               try { leafletMap.fitBounds(geojsonLayer.getBounds(), { padding: [45, 45] }); } catch(e){}
+                                           }
+                                       }, 320);
+                                   }
 
-                const isLinda = item.textContent.includes('Linda Lopez');
-                const isExplicitMatch = item.getAttribute('data-region') === currentActiveRegion;
-                const isMatch = isExplicitMatch || isLinda;
-                
-                if (isMatch) {
-                    item.style.removeProperty('display');
-                    item.style.setProperty('margin-bottom', '2rem', 'important');
-                    
-                    // Apply Ivory & Gold styles strictly to the explicitly matched region
-                    if (isExplicitMatch) {
-                        item.style.setProperty('background-color', '#FAF8F5', 'important');
-                        item.style.setProperty('border', '1px solid #DFBA73', 'important');
-                        item.style.setProperty('border-radius', '14px', 'important');
-                        item.style.setProperty('padding', '18px', 'important');
-                    }
-                } else {
-                    item.style.setProperty('display', 'none', 'important');
-                }
-            });
-            
-            // Pin Linda Lopez directly under the selected officer
-            const linda = Array.from(officerItems).find(el => el.textContent.includes('Linda Lopez'));
-            if (linda && window.officerParent) {
-                window.officerParent.appendChild(linda);
-            }
-        }, 30);
-        
-        let clearBtn = document.getElementById('clearCountyFilter');
-        if (!clearBtn) {
-            const headerEl = [...document.querySelectorAll('.modal-left *')].find(el => el.textContent.trim().startsWith('Loan Officers'));
-            if (headerEl) {
-                headerEl.style.display = 'flex';
-                headerEl.style.justifyContent = 'space-between';
-                headerEl.style.alignItems = 'center';
-                headerEl.style.width = '100%';
-                
-                clearBtn = document.createElement('span');
-                clearBtn.id = 'clearCountyFilter';
-                clearBtn.innerHTML = '&times;';
-                clearBtn.style.cssText = 'cursor: pointer; font-size: 1.6rem; color: #999; font-weight: bold; padding: 0 5px;';
-                
-                clearBtn.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    currentActiveRegion = null;
-                    refreshMapStyles();
-                    
-                    if (window.originalOfficers && window.officerParent) {
-                        window.originalOfficers.forEach(opt => {
-                            window.officerParent.appendChild(opt);
-                        });
-                    }
+                                   // 2. Smoothly scroll the lender information back up
+                                   const mContainer = document.querySelector('.modal-container');
+                                   if (mContainer) {
+                                       mContainer.scrollTo({ top: 0, behavior: 'smooth' });
+                                   }
 
-                    const officerItems = document.querySelectorAll('.officer-item');
-                    officerItems.forEach(item => {
-                        item.style.removeProperty('display');
-                        item.style.removeProperty('background-color');
-                        item.style.removeProperty('border');
-                        item.style.removeProperty('border-radius');
-                        item.style.removeProperty('padding');
-                        item.style.removeProperty('margin-bottom');
-                    });
-                    clearBtn.remove();
-                });
-                headerEl.appendChild(clearBtn);
-            }
-        }
-    } else {
-        if (targetScrollItem && typeof activeState !== 'undefined' && activeState !== 'Arkansas') {
-            scrollContainer.scrollTo({ top: targetScrollItem.offsetTop - 40, behavior: 'smooth' });
-        }
-    }
-});
+                                   setTimeout(() => {
+                                       const officerItems = document.querySelectorAll('.officer-item');
+                                       
+                                       officerItems.forEach(item => {
+                                           // Reset previous inline styles
+                                           item.style.removeProperty('background-color');
+                                           item.style.removeProperty('border');
+                                           item.style.removeProperty('border-radius');
+                                           item.style.removeProperty('padding');
+                                           item.style.removeProperty('margin-bottom');
+
+                                           const isLinda = item.textContent.includes('Linda Lopez');
+                                           const isExplicitMatch = item.getAttribute('data-region') === currentActiveRegion;
+                                           const isMatch = isExplicitMatch || isLinda;
+                                           
+                                           if (isMatch) {
+                                               item.style.removeProperty('display');
+                                               item.style.setProperty('margin-bottom', '2rem', 'important');
+                                               
+                                               // Apply Ivory & Gold styles strictly to the explicitly matched region
+                                               if (isExplicitMatch) {
+                                                   item.style.setProperty('background-color', '#FAF8F5', 'important');
+                                                   item.style.setProperty('border', '1px solid #DFBA73', 'important');
+                                                   item.style.setProperty('border-radius', '14px', 'important');
+                                                   item.style.setProperty('padding', '18px', 'important');
+                                               }
+                                           } else {
+                                               item.style.setProperty('display', 'none', 'important');
+                                           }
+                                       });
+                                       
+                                       // Pin Linda Lopez directly under the selected officer
+                                       const linda = Array.from(officerItems).find(el => el.textContent.includes('Linda Lopez'));
+                                       if (linda && window.officerParent) {
+                                           window.officerParent.appendChild(linda);
+                                       }
+                                   }, 30);
+                                   
+                                   let clearBtn = document.getElementById('clearCountyFilter');
+                                   if (!clearBtn) {
+                                       const headerEl = [...document.querySelectorAll('.modal-left *')].find(el => el.textContent.trim().startsWith('Loan Officers'));
+                                       if (headerEl) {
+                                           headerEl.style.display = 'flex';
+                                           headerEl.style.justifyContent = 'space-between';
+                                           headerEl.style.alignItems = 'center';
+                                           headerEl.style.width = '100%';
+                                           
+                                           clearBtn = document.createElement('span');
+                                           clearBtn.id = 'clearCountyFilter';
+                                           clearBtn.innerHTML = '&times;';
+                                           clearBtn.style.cssText = 'cursor: pointer; font-size: 1.6rem; color: #999; font-weight: bold; padding: 0 5px;';
+                                           
+                                           clearBtn.addEventListener('click', function(e) {
+                                               e.stopPropagation();
+                                               currentActiveRegion = null;
+                                               refreshMapStyles();
+                                               
+                                               if (window.originalOfficers && window.officerParent) {
+                                                   window.originalOfficers.forEach(opt => {
+                                                       window.officerParent.appendChild(opt);
+                                                   });
+                                               }
+
+                                               const officerItems = document.querySelectorAll('.officer-item');
+                                               officerItems.forEach(item => {
+                                                   item.style.removeProperty('display');
+                                                   item.style.removeProperty('background-color');
+                                                   item.style.removeProperty('border');
+                                                   item.style.removeProperty('border-radius');
+                                                   item.style.removeProperty('padding');
+                                                   item.style.removeProperty('margin-bottom');
+                                               });
+                                               clearBtn.remove();
+                                           });
+                                           headerEl.appendChild(clearBtn);
+                                       }
+                                   }
+                               } else {
+                                   if (targetScrollItem && typeof activeState !== 'undefined' && activeState !== 'Arkansas') {
+                                       scrollContainer.scrollTo({ top: targetScrollItem.offsetTop - 40, behavior: 'smooth' });
+                                   }
+                               }
+                           });
                        }
                    }).addTo(leafletMap);
 
