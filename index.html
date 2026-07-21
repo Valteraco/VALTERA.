@@ -395,6 +395,13 @@
 
                const isMobile = window.innerWidth < 992;
 
+               if (isMobile) {
+                   leftHtml += `<style>
+                       .btn-custom-green { color: #1E3F33 !important; border-color: #1E3F33 !important; }
+                       .btn-custom-green:active { color: #FFFFFF !important; background-color: #1E3F33 !important; }
+                   </style>`;
+               }
+
                lender.officers.forEach((officer, index) => {
                    const avatarImg = officer.photo
                        ? `<img src="${officer.photo}" alt="${officer.name}" class="officer-avatar" style="object-fit: cover;">`
@@ -411,7 +418,7 @@
 
                    // Create the button ONLY for mobile screens
                    const additionalInfoBtn = (officer.profileUrl && isMobile)
-                       ? `<a href="${officer.profileUrl}" target="_blank" class="btn-outline-primary" style="display: block; text-align: center; margin-top: 1rem; padding: 0.6rem 1rem; text-decoration: none; width: 100%; box-sizing: border-box; font-size: 0.95rem;">Additional Information</a>`
+                       ? `<a href="${officer.profileUrl}" target="_blank" class="btn-outline-primary btn-custom-green" style="display: block; text-align: center; margin-top: 1rem; padding: 0.6rem 1rem; text-decoration: none; width: 100%; box-sizing: border-box; font-size: 0.95rem;">Additional Information</a>`
                        : ``;
 
                    const regionHtml = officer.region 
@@ -638,10 +645,22 @@
                                refreshMapStyles();
                                highlightLoanOfficers(currentActiveRegion);
 
-                               // Scroll to the map (top of container) smoothly, UNLESS the user clicked the bio text
-                               if (!e.target.closest('.expandable-wrapper')) {
-                                   mContainer.scrollTo({ top: 0, behavior: 'smooth' });
+                               // 1. Shrink the map back to 45vh so the screen splits properly
+                               const mRight = document.querySelector('.modal-right');
+                               if (mRight) {
+                                   mRight.style.transition = 'height 0.4s cubic-bezier(0.25, 0.8, 0.25, 1) !important';
+                                   mRight.style.setProperty('height', '45vh', 'important');
+                                   
+                                   setTimeout(() => {
+                                       if (typeof leafletMap !== 'undefined' && leafletMap && typeof geojsonLayer !== 'undefined') {
+                                           leafletMap.invalidateSize();
+                                           try { leafletMap.fitBounds(geojsonLayer.getBounds(), { padding: [45, 45] }); } catch(e){}
+                                       }
+                                   }, 320);
                                }
+
+                               // 2. Scroll to the map (top of container) smoothly
+                               mContainer.scrollTo({ top: 0, behavior: 'smooth' });
 
                                setTimeout(() => {
                                    officerItems.forEach(opt => {
