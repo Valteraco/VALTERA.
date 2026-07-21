@@ -754,9 +754,15 @@
 
                const mapCenter = activeState === 'Arkansas' ? [34.8, -92.2] : [39.32, -111.09];
                
+               const isMobileDevice = window.innerWidth < 992;
+
                leafletMap = L.map('utah-map', {
-                   zoomControl: false, dragging: false, doubleClickZoom: false,
-                   scrollWheelZoom: false, touchZoom: false, attributionControl: false,
+                   zoomControl: false, 
+                   dragging: isMobileDevice, // Allows panning on mobile
+                   doubleClickZoom: false,
+                   scrollWheelZoom: false, 
+                   touchZoom: isMobileDevice, // Allows pinch-to-zoom on mobile
+                   attributionControl: false,
                    zoomSnap: 0 
                }).setView(mapCenter, 6);
 
