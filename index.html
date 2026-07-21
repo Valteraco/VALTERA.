@@ -411,7 +411,7 @@
 
                    // Create the button ONLY for mobile screens
                    const additionalInfoBtn = (officer.profileUrl && isMobile)
-                       ? `<a href="${officer.profileUrl}" target="_blank" class="btn-outline-primary" style="display: block; text-align: center; margin-top: 1rem; padding: 0.6rem 1rem; text-decoration: none; width: 100%; box-sizing: border-box; font-size: 0.95rem; color: #1E3F33;">Additional Information</a>`
+                       ? `<a href="${officer.profileUrl}" target="_blank" class="btn-outline-primary" style="display: block; text-align: center; margin-top: 1rem; padding: 0.6rem 1rem; text-decoration: none; width: 100%; box-sizing: border-box; font-size: 0.95rem;">Additional Information</a>`
                        : ``;
 
                    const regionHtml = officer.region 
@@ -670,49 +670,52 @@
                                    });
                                    
                                    // Pin Linda Lopez directly under the selected officer
-                                   const linda = Array.from(officerItems).find(el => el.textContent.includes('Linda Lopez'));
-                                   if (linda && window.officerParent) {
-                                       window.officerParent.appendChild(linda);
-                                   }
-
-                                   let clearBtn = document.getElementById('clearCountyFilter');
-                                   if (!clearBtn) {
-                                       const headerEl = [...document.querySelectorAll('.modal-left *')].find(el => el.textContent.trim().startsWith('Loan Officers'));
-                                       if (headerEl) {
-                                           headerEl.style.display = 'flex';
-                                           headerEl.style.justifyContent = 'space-between';
-                                           headerEl.style.alignItems = 'center';
-                                           headerEl.style.width = '100%';
-                                           
-                                           clearBtn = document.createElement('span');
-                                           clearBtn.id = 'clearCountyFilter';
-                                           clearBtn.innerHTML = '&times;';
-                                           clearBtn.style.cssText = 'cursor: pointer; font-size: 1.6rem; color: #999; font-weight: bold; padding: 0 5px;';
-                                           
-                                           clearBtn.addEventListener('click', function(e) {
-                                               e.stopPropagation();
-                                               currentActiveRegion = null;
-                                               refreshMapStyles();
-                                               
-                                               if (window.originalOfficers && window.officerParent) {
-                                                   window.originalOfficers.forEach(opt => {
-                                                       window.officerParent.appendChild(opt);
-                                                   });
-                                               }
-
-                                               officerItems.forEach(opt => {
-                                                   opt.style.removeProperty('display');
-                                                   opt.style.removeProperty('background-color');
-                                                   opt.style.removeProperty('border');
-                                                   opt.style.removeProperty('border-radius');
-                                                   opt.style.removeProperty('padding');
-                                                   opt.style.removeProperty('margin-bottom');
-                                               });
-                                               clearBtn.remove();
-                                           });
-                                           headerEl.appendChild(clearBtn);
+                                       const linda = Array.from(officerItems).find(el => el.textContent.includes('Linda Lopez'));
+                                       if (linda && linda.parentNode) {
+                                           linda.parentNode.appendChild(linda);
                                        }
-                                   }
+
+                                       let clearBtn = document.getElementById('clearCountyFilter');
+                                       if (!clearBtn) {
+                                           const headerEl = [...document.querySelectorAll('.modal-left *')].find(el => el.textContent.trim().startsWith('Loan Officers'));
+                                           if (headerEl) {
+                                               headerEl.style.display = 'flex';
+                                               headerEl.style.justifyContent = 'space-between';
+                                               headerEl.style.alignItems = 'center';
+                                               headerEl.style.width = '100%';
+                                               
+                                               clearBtn = document.createElement('span');
+                                               clearBtn.id = 'clearCountyFilter';
+                                               clearBtn.innerHTML = '&times;';
+                                               clearBtn.style.cssText = 'cursor: pointer; font-size: 1.6rem; color: #999; font-weight: bold; padding: 0 5px;';
+                                               
+                                               clearBtn.addEventListener('click', function(e) {
+                                                   e.stopPropagation();
+                                                   currentActiveRegion = null;
+                                                   refreshMapStyles();
+                                                   
+                                                   const parent = officerItems[0].parentNode;
+                                                   Array.from(officerItems)
+                                                       .sort((a, b) => parseInt(a.getAttribute('data-index')) - parseInt(b.getAttribute('data-index')))
+                                                       .forEach(opt => {
+                                                           parent.appendChild(opt);
+                                                           opt.style.removeProperty('display');
+                                                           opt.style.removeProperty('background-color');
+                                                           opt.style.removeProperty('border');
+                                                           opt.style.removeProperty('border-radius');
+                                                           opt.style.removeProperty('padding');
+                                                           
+                                                           // Restore the separator line styling
+                                                           const isLastItem = opt.getAttribute('data-index') === String(officerItems.length - 1);
+                                                           opt.style.setProperty('border-bottom', isLastItem ? 'none' : '1px solid #EAEAEA', 'important');
+                                                           opt.style.setProperty('margin-bottom', isLastItem ? '0' : '2.5rem', 'important');
+                                                           opt.style.setProperty('padding-bottom', isLastItem ? '0' : '2.5rem', 'important');
+                                                       });
+                                                   clearBtn.remove();
+                                               });
+                                               headerEl.appendChild(clearBtn);
+                                           }
+                                       }
                                }, 30);
                            }
                        });
@@ -881,11 +884,11 @@
                                        
                                        // Pin Linda Lopez directly under the selected officer
                                        const linda = Array.from(officerItems).find(el => el.textContent.includes('Linda Lopez'));
-                                       if (linda && window.officerParent) {
-                                           window.officerParent.appendChild(linda);
+                                       if (linda && linda.parentNode) {
+                                           linda.parentNode.appendChild(linda);
                                        }
                                    }, 30);
-                                   
+
                                    let clearBtn = document.getElementById('clearCountyFilter');
                                    if (!clearBtn) {
                                        const headerEl = [...document.querySelectorAll('.modal-left *')].find(el => el.textContent.trim().startsWith('Loan Officers'));
@@ -905,21 +908,23 @@
                                                currentActiveRegion = null;
                                                refreshMapStyles();
                                                
-                                               if (window.originalOfficers && window.officerParent) {
-                                                   window.originalOfficers.forEach(opt => {
-                                                       window.officerParent.appendChild(opt);
+                                               const parent = officerItems[0].parentNode;
+                                               Array.from(officerItems)
+                                                   .sort((a, b) => parseInt(a.getAttribute('data-index')) - parseInt(b.getAttribute('data-index')))
+                                                   .forEach(opt => {
+                                                       parent.appendChild(opt);
+                                                       opt.style.removeProperty('display');
+                                                       opt.style.removeProperty('background-color');
+                                                       opt.style.removeProperty('border');
+                                                       opt.style.removeProperty('border-radius');
+                                                       opt.style.removeProperty('padding');
+                                                       
+                                                       // Restore the separator line styling
+                                                       const isLastItem = opt.getAttribute('data-index') === String(officerItems.length - 1);
+                                                       opt.style.setProperty('border-bottom', isLastItem ? 'none' : '1px solid #EAEAEA', 'important');
+                                                       opt.style.setProperty('margin-bottom', isLastItem ? '0' : '2.5rem', 'important');
+                                                       opt.style.setProperty('padding-bottom', isLastItem ? '0' : '2.5rem', 'important');
                                                    });
-                                               }
-
-                                               const officerItems = document.querySelectorAll('.officer-item');
-                                               officerItems.forEach(item => {
-                                                   item.style.removeProperty('display');
-                                                   item.style.removeProperty('background-color');
-                                                   item.style.removeProperty('border');
-                                                   item.style.removeProperty('border-radius');
-                                                   item.style.removeProperty('padding');
-                                                   item.style.removeProperty('margin-bottom');
-                                               });
                                                clearBtn.remove();
                                            });
                                            headerEl.appendChild(clearBtn);
