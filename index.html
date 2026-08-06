@@ -224,8 +224,7 @@
                            { name: "Aaron Fritz", nmls: "NMLS #47246", region: "Northern Utah Region", photo: "MomentumLoans/UtahMomentumLoans/AaronFritz.jpg", bio: "Whether you’re buying, selling, refinancing, or building your dream home, you have a lot riding on your decision. Market conditions and mortgage programs change frequently, and I welcome the opportunity to serve your needs with quick and accurate real estate financing advice. I have the expertise and knowledge to help you determine the absolute best loan program to meet your objectives. Ensuring that you make the right choice for you and your family is my ultimate goal.", phone: "(801) 791-5266", email: "afritz@momentumloans.com", profileUrl: "https://www.momentumloans.com/loan_officer/aaron-fritz/" },
                            { name: "Tanner Gatchell", nmls: "NMLS #1514890", region: "Southern Utah Region", photo: "MomentumLoans/UtahMomentumLoans/TannerGatchell.jpg", bio: "Tanner grew up in St. George, Utah and enjoys anything sports and outdoors related. He and his family also love going for drives and spend most of their free time at the lake or in the mountains enjoying beautiful Southern Utah. He attended both Southern Utah University and Utah State University. Tanner sold Real Estate for several years and marketed for a title company before entering the Mortgage side of the industry.", phone: "(435) 669-7872", email: "tgatchell@momentumloans.com", profileUrl: "https://www.momentumloans.com/loan_officer/tanner-gatchell/" },
                            { name: "Linda Lopez", nmls: "NMLS #2584759", region: "Statewide Coverage (Español)", photo: "MomentumLoans/UtahMomentumLoans/LindaLopez.jpg", bio: "Whether you’re buying, selling, refinancing, or building your dream home, you have a lot riding on your decision. Market conditions and mortgage programs change frequently, and I welcome the opportunity to serve your needs with quick and accurate real estate financing advice. I have the expertise and knowledge to help you determine the absolute best loan program to meet your objectives. Ensuring that you make the right choice for you and your family is my ultimate goal.", phone: "(801) 850-7072", email: "llopez@momentumloans.com", profileUrl: "https://www.momentumloans.com/loan_officer/linda-lopez/" },
-                           { name: "JT Lindsay", nmls: "NMLS #1447979", region: "Utah County and Central Region", photo: "MomentumLoans/UtahMomentumLoans/JTLindsay.jpg", bio: "Whether you’re buying, selling, refinancing, or building your dream home, you have a lot riding on your decision. Market conditions and mortgage programs change frequently, and I welcome the opportunity to serve your needs with quick and accurate real estate financing advice. I have the expertise and knowledge to help you determine the absolute best loan program to meet your objectives. Ensuring that you make the right choice for you and your family is my ultimate goal.", phone: "(801) 717-8038", email: "jlindsay@momentumloans.com", profileUrl: "https://www.momentumloans.com/loan_officer/jt-lindsay/" },
-                           { name: "Brayden Ramsay", nmls: "NMLS #1997195", region: "Salt Lake & Summit Counties", photo: "MomentumLoans/UtahMomentumLoans/BraydenRamsay.jpg", bio: "Brayden Ramsay has been helping people achieve their homeownership goals for almost a decade. He attended Snow College before earning his Bachelor’s degree from the University of Utah. He enjoys guiding first-time homebuyers through every step of the process, while also making financing simple and seamless for repeat buyers. Known for his integrity, clear communication, personalized service, and commitment to his clients, Brayden strives to make every home loan experience as smooth and enjoyable as possible. Outside of work, he enjoys sports, traveling, and spending quality time with his wife and children.", phone: "(801) 703-1803", email: "bramsay@momentumloans.com", profileUrl: "https://www.momentumloans.com/loan_officer/brayden-ramsay/" }
+                           { name: "Brayden Ramsay", nmls: "NMLS #1997195", region: "Salt Lake and Utah Counties", photo: "MomentumLoans/UtahMomentumLoans/BraydenRamsay.jpg", bio: "Brayden Ramsay has been helping people achieve their homeownership goals for almost a decade. He attended Snow College before earning his Bachelor’s degree from the University of Utah. He enjoys guiding first-time homebuyers through every step of the process, while also making financing simple and seamless for repeat buyers. Known for his integrity, clear communication, personalized service, and commitment to his clients, Brayden strives to make every home loan experience as smooth and enjoyable as possible. Outside of work, he enjoys sports, traveling, and spending quality time with his wife and children.", phone: "(801) 703-1803", email: "bramsay@momentumloans.com", profileUrl: "https://www.momentumloans.com/loan_officer/brayden-ramsay/" }
                        ]
                    },
                    {
@@ -433,6 +432,7 @@
                    let regionId = "";
                    if (officer.region === "Northern Utah Region") regionId = "northern";
                    else if (officer.region === "Salt Lake & Summit Counties") regionId = "slc";
+                   else if (officer.region === "Salt Lake and Utah Counties") regionId = "slc,central"; // Assigning Brayden to multiple map layers
                    else if (officer.region === "Utah County and Central Region") regionId = "central";
                    else if (officer.region === "Southern Utah Region") regionId = "southern";
                    else if (officer.region === "Statewide Coverage (Español)" || officer.region === "Statewide Coverage") regionId = "statewide";
@@ -669,7 +669,8 @@
                                        opt.style.removeProperty('margin-bottom');
 
                                        const isLinda = opt.textContent.includes('Linda Lopez');
-                                       const isMatch = opt.getAttribute('data-region') === region || isLinda;
+                                       // Upgraded filter to allow single officers to represent multiple regions
+                                       const isMatch = (opt.getAttribute('data-region') || '').includes(region) || isLinda;
                                        
                                        if (isMatch) {
                                            opt.style.removeProperty('display');
@@ -744,7 +745,9 @@
                    });
                }, 300);
 
-               // The window.innerWidth >= 992 condition has been removed to allow mobile rendering
+               // Enable dragging and touch zoom for mobile devices
+               const isMobileDevice = window.innerWidth < 992;
+               
                const officerItems = document.querySelectorAll('.officer-item');
                const scrollContainer = document.getElementById('modalLeftScroll');
 
@@ -754,14 +757,12 @@
 
                const mapCenter = activeState === 'Arkansas' ? [34.8, -92.2] : [39.32, -111.09];
                
-               const isMobileDevice = window.innerWidth < 992;
-
                leafletMap = L.map('utah-map', {
                    zoomControl: false, 
-                   dragging: isMobileDevice, // Allows panning on mobile
+                   dragging: isMobileDevice, 
                    doubleClickZoom: false,
                    scrollWheelZoom: false, 
-                   touchZoom: isMobileDevice, // Allows pinch-to-zoom on mobile
+                   touchZoom: isMobileDevice, 
                    attributionControl: false,
                    zoomSnap: 0 
                }).setView(mapCenter, 6);
@@ -776,7 +777,8 @@
 
                    if (!regionId || regionId === "unmapped") return null;
 
-                   const primaryItem = document.querySelector(`.officer-item[data-region="${regionId}"]`);
+                   // Upgraded exact-match CSS selector to a wildcard selector to support multi-region officers
+                   const primaryItem = document.querySelector(`.officer-item[data-region*="${regionId}"]`);
                    const statewideItem = document.querySelector(`.officer-item[data-region="statewide"]`);
 
                    if (primaryItem) primaryItem.classList.add('active');
@@ -795,7 +797,7 @@
                        
                        const isHighlighted = activeState === 'Arkansas' ? 
                            (mapRegionToShow !== null) : 
-                           (mapRegionToShow === "statewide" || (layer.options.regionId === mapRegionToShow && mapRegionToShow !== "unmapped"));
+                           (mapRegionToShow === "statewide" || (mapRegionToShow !== null && mapRegionToShow !== "unmapped" && mapRegionToShow.includes(layer.options.regionId)));
                        
                        if (isHighlighted) {
                            layer.setStyle({
@@ -840,7 +842,7 @@
                                const mapRegionToShow = hoveredRegionId !== null ? hoveredRegionId : currentActiveRegion;
                                const isHighlighted = activeState === 'Arkansas' ? 
                                    (mapRegionToShow !== null) : 
-                                   (mapRegionToShow === "statewide" || (layer.options.regionId === mapRegionToShow && mapRegionToShow !== "unmapped"));
+                                   (mapRegionToShow === "statewide" || (mapRegionToShow !== null && mapRegionToShow !== "unmapped" && mapRegionToShow.includes(layer.options.regionId)));
                                
                                if (!isHighlighted) { layer.setStyle({ fillColor: '#D1D1D1', color: '#FFFFFF' }); }
                            });
@@ -848,7 +850,7 @@
                                const mapRegionToShow = hoveredRegionId !== null ? hoveredRegionId : currentActiveRegion;
                                const isHighlighted = activeState === 'Arkansas' ? 
                                    (mapRegionToShow !== null) : 
-                                   (mapRegionToShow === "statewide" || (layer.options.regionId === mapRegionToShow && mapRegionToShow !== "unmapped"));
+                                   (mapRegionToShow === "statewide" || (mapRegionToShow !== null && mapRegionToShow !== "unmapped" && mapRegionToShow.includes(layer.options.regionId)));
                                
                                if (!isHighlighted) { layer.setStyle({ fillColor: '#EAEAEA', color: '#FFFFFF' }); }
                            });
@@ -893,7 +895,8 @@
                                            item.style.removeProperty('margin-bottom');
 
                                            const isLinda = item.textContent.includes('Linda Lopez');
-                                           const isExplicitMatch = item.getAttribute('data-region') === currentActiveRegion;
+                                           // Upgraded map filtering to detect officers representing multiple regions
+                                           const isExplicitMatch = (item.getAttribute('data-region') || '').includes(currentActiveRegion);
                                            const isMatch = isExplicitMatch || isLinda;
                                            
                                            if (isMatch) {
