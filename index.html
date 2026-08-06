@@ -224,8 +224,7 @@
                            { name: "Aaron Fritz", nmls: "NMLS #47246", region: "Northern Utah Region", photo: "MomentumLoans/UtahMomentumLoans/AaronFritz.jpg", bio: "Whether you’re buying, selling, refinancing, or building your dream home, you have a lot riding on your decision. Market conditions and mortgage programs change frequently, and I welcome the opportunity to serve your needs with quick and accurate real estate financing advice. I have the expertise and knowledge to help you determine the absolute best loan program to meet your objectives. Ensuring that you make the right choice for you and your family is my ultimate goal.", phone: "(801) 791-5266", email: "afritz@momentumloans.com", profileUrl: "https://www.momentumloans.com/loan_officer/aaron-fritz/" },
                            { name: "Tanner Gatchell", nmls: "NMLS #1514890", region: "Southern Utah Region", photo: "MomentumLoans/UtahMomentumLoans/TannerGatchell.jpg", bio: "Tanner grew up in St. George, Utah and enjoys anything sports and outdoors related. He and his family also love going for drives and spend most of their free time at the lake or in the mountains enjoying beautiful Southern Utah. He attended both Southern Utah University and Utah State University. Tanner sold Real Estate for several years and marketed for a title company before entering the Mortgage side of the industry.", phone: "(435) 669-7872", email: "tgatchell@momentumloans.com", profileUrl: "https://www.momentumloans.com/loan_officer/tanner-gatchell/" },
                            { name: "Linda Lopez", nmls: "NMLS #2584759", region: "Statewide Coverage (Español)", photo: "MomentumLoans/UtahMomentumLoans/LindaLopez.jpg", bio: "Whether you’re buying, selling, refinancing, or building your dream home, you have a lot riding on your decision. Market conditions and mortgage programs change frequently, and I welcome the opportunity to serve your needs with quick and accurate real estate financing advice. I have the expertise and knowledge to help you determine the absolute best loan program to meet your objectives. Ensuring that you make the right choice for you and your family is my ultimate goal.", phone: "(801) 850-7072", email: "llopez@momentumloans.com", profileUrl: "https://www.momentumloans.com/loan_officer/linda-lopez/" },
-                           { name: "JT Lindsay", nmls: "NMLS #1447979", region: "Utah County and Central Region", photo: "MomentumLoans/UtahMomentumLoans/JTLindsay.jpg", bio: "Whether you’re buying, selling, refinancing, or building your dream home, you have a lot riding on your decision. Market conditions and mortgage programs change frequently, and I welcome the opportunity to serve your needs with quick and accurate real estate financing advice. I have the expertise and knowledge to help you determine the absolute best loan program to meet your objectives. Ensuring that you make the right choice for you and your family is my ultimate goal.", phone: "(801) 717-8038", email: "jlindsay@momentumloans.com", profileUrl: "https://www.momentumloans.com/loan_officer/jt-lindsay/" },
-                           { name: "Brayden Ramsay", nmls: "NMLS #1997195", region: "Salt Lake & Summit Counties", photo: "MomentumLoans/UtahMomentumLoans/BraydenRamsay.jpg", bio: "Brayden Ramsay has been helping people achieve their homeownership goals for almost a decade. He attended Snow College before earning his Bachelor’s degree from the University of Utah. He enjoys guiding first-time homebuyers through every step of the process, while also making financing simple and seamless for repeat buyers. Known for his integrity, clear communication, personalized service, and commitment to his clients, Brayden strives to make every home loan experience as smooth and enjoyable as possible. Outside of work, he enjoys sports, traveling, and spending quality time with his wife and children.", phone: "(801) 703-1803", email: "bramsay@momentumloans.com", profileUrl: "https://www.momentumloans.com/loan_officer/brayden-ramsay/" }
+                           { name: "Brayden Ramsay", nmls: "NMLS #1997195", region: "Central Utah Region", photo: "MomentumLoans/UtahMomentumLoans/BraydenRamsay.jpg", bio: "Brayden Ramsay has been helping people achieve their homeownership goals for almost a decade. He attended Snow College before earning his Bachelor’s degree from the University of Utah. He enjoys guiding first-time homebuyers through every step of the process, while also making financing simple and seamless for repeat buyers. Known for his integrity, clear communication, personalized service, and commitment to his clients, Brayden strives to make every home loan experience as smooth and enjoyable as possible. Outside of work, he enjoys sports, traveling, and spending quality time with his wife and children.", phone: "(801) 703-1803", email: "bramsay@momentumloans.com", profileUrl: "https://www.momentumloans.com/loan_officer/brayden-ramsay/" }
                        ]
                    },
                    {
@@ -350,7 +349,7 @@
            // Mapping individual Utah county FIPS codes to your specific LO regions
            const countyDataMap = {
                "49003": { region: "northern" }, "49005": { region: "northern" }, "49033": { region: "northern" }, "49057": { region: "northern" }, "49011": { region: "northern" }, "49029": { region: "northern" }, 
-               "49035": { region: "slc" }, "49043": { region: "slc" }, 
+               "49035": { region: "central" }, "49043": { region: "central" }, 
                "49049": { region: "central" }, "49045": { region: "central" }, "49023": { region: "central" }, "49039": { region: "central" }, "49027": { region: "central" }, "49041": { region: "central" }, "49007": { region: "central" }, "49015": { region: "central" }, "49051": { region: "central" }, "49013": { region: "central" }, "49047": { region: "central" }, "49009": { region: "central" }, 
                "49001": { region: "southern" }, "49031": { region: "southern" }, "49055": { region: "southern" }, "49021": { region: "southern" }, "49017": { region: "southern" }, "49037": { region: "southern" }, "49053": { region: "southern" }, "49025": { region: "southern" }, "49019": { region: "southern" }
            };
@@ -432,8 +431,7 @@
 
                    let regionId = "";
                    if (officer.region === "Northern Utah Region") regionId = "northern";
-                   else if (officer.region === "Salt Lake & Summit Counties") regionId = "slc";
-                   else if (officer.region === "Utah County and Central Region") regionId = "central";
+                   else if (officer.region === "Central Utah Region") regionId = "central";
                    else if (officer.region === "Southern Utah Region") regionId = "southern";
                    else if (officer.region === "Statewide Coverage (Español)" || officer.region === "Statewide Coverage") regionId = "statewide";
                    else regionId = officer.region ? officer.region.toLowerCase().replace(/[^a-z0-9]/g, '') : "unmapped";
@@ -754,15 +752,9 @@
 
                const mapCenter = activeState === 'Arkansas' ? [34.8, -92.2] : [39.32, -111.09];
                
-               const isMobileDevice = window.innerWidth < 992;
-
                leafletMap = L.map('utah-map', {
-                   zoomControl: false, 
-                   dragging: isMobileDevice, // Allows panning on mobile
-                   doubleClickZoom: false,
-                   scrollWheelZoom: false, 
-                   touchZoom: isMobileDevice, // Allows pinch-to-zoom on mobile
-                   attributionControl: false,
+                   zoomControl: false, dragging: false, doubleClickZoom: false,
+                   scrollWheelZoom: false, touchZoom: false, attributionControl: false,
                    zoomSnap: 0 
                }).setView(mapCenter, 6);
 
